@@ -214,7 +214,7 @@ public class Controller implements Initializable {
     }
 
     private String DatePicker2Str(DatePicker value) {
-        return (value.getValue().getMonthValue()+"/"+value.getValue().getDayOfMonth()+"/"+value.getValue().getYear());
+        return (value.getValue().getDayOfMonth()+"/"+value.getValue().getMonthValue()+"/"+value.getValue().getYear());
     }
 
     private boolean createEmpty() {
@@ -224,7 +224,7 @@ public class Controller implements Initializable {
             return false;
     }
     private boolean updateEmpty() {
-        if(usernameUpdate.getText().isEmpty() || passwordUpdate.getText().isEmpty() || firstUpdate.getText().isEmpty() || lastUpdate.getText().isEmpty() || birthCreate.getValue()==null || birthUpdate.getValue().toString().isEmpty() || cityUpdate.getText().isEmpty())
+        if(usernameUpdate.getText().isEmpty() || passwordUpdate.getText().isEmpty() || firstUpdate.getText().isEmpty() || lastUpdate.getText().isEmpty() || birthUpdate.getValue()==null || birthUpdate.getValue().toString().isEmpty() || cityUpdate.getText().isEmpty())
             return true;
         else
             return false;
@@ -263,7 +263,7 @@ public class Controller implements Initializable {
 
     private LocalDate parseBirthday(String username) {
         String[] details=getBirthday(username).split("/");
-        return LocalDate.of(Integer.parseInt(details[2]),Integer.parseInt(details[0]),Integer.parseInt(details[1]));
+        return LocalDate.of(Integer.parseInt(details[2]),Integer.parseInt(details[1]),Integer.parseInt(details[0]));
     }
 
 
@@ -313,10 +313,10 @@ public class Controller implements Initializable {
         }
         else if(confirm("Are you sure you want to update the details?")){
             model.UsersTable_updateUserInfoByUsername(username,usernameUpdate.getText(),passwordUpdate.getText(),DatePicker2Str(birthUpdate),firstUpdate.getText(),lastUpdate.getText(),cityUpdate.getText());
-            if(usernameUpdate.getText().equals(this.username)==false){
+            if(usernameRead.getText().equals(this.username)==true){
                 clearRead();
-                username=usernameUpdate.getText();
             }
+            username=usernameUpdate.getText();
             updateHome(username);
             info("The update was made successfully!");
         }
