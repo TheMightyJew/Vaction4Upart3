@@ -9,7 +9,8 @@ public class Model implements IModel {
     //attributes
     private String databaseName;
     //Enums...
-    public enum UsersfieldNameEnum {Username,Password,Birthday,FirstName,LastName,City;}
+    public enum UsersfieldNameEnum {Username,Password,Birthday,FirstName,LastName,City,State;}
+    public enum PurchasesfieldNameEnum {Username,VacationID,PaymentCompany,CardNumber,CVV,ValidDate,UserID,FirstName,LastName;}
 
     public enum tableNameEnum{Users_table;}
     //constructor
@@ -45,6 +46,7 @@ public class Model implements IModel {
                     + "	FirstName text NOT NULL,\n"
                     + "	LastName text NOT NULL,\n"
                     + "	City text NOT NULL\n"
+                    + "	State text NOT NULL\n"
                     + ");";
             stmt.executeUpdate(sql);
             stmt.close();
@@ -53,6 +55,35 @@ public class Model implements IModel {
             e.printStackTrace();
         }
     }//creating a new users table
+
+    public void createNewPurchasesTable(){
+        Connection c = null;
+        Statement stmt = null;
+        String url = "jdbc:sqlite:" + Configuration.loadProperty("directoryPath") + databaseName;
+
+        try{
+            c = DriverManager.getConnection("jdbc:sqlite:"+ Configuration.loadProperty("directoryPath") + databaseName);
+            stmt = c.createStatement();
+            String sql = "CREATE TABLE IF NOT EXISTS Purchases_Table (\n"
+                    + "Username text NOT NULL,\n"
+                    + "VacationID tetx NOT NULL,\n"
+                    + "PaymentCompany text NOT NULL,\n"
+                    + "CardNumber int,\n"
+                    + "CVV int,\n"
+                    + "ValidDate date,\n"
+                    + "UserID text,\n"
+                    + "FirstName text,\n"
+                    + "LastName text,\n"
+                    + "CONSTRAINT PK_Person PRIMARY KEY (Username,VacationID)"
+                    + ");";
+            stmt.executeUpdate(sql);
+            stmt.close();
+            c.close();
+        }
+        catch ( Exception e ) {
+            e.printStackTrace();
+        }
+    }
 
     private void insertQuery(String table_name,Class<? extends Enum<?>> tableEnum, String[] insert_values) {
         String [] field_array = getNames(tableEnum);
