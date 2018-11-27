@@ -11,13 +11,13 @@ public class Model implements IModel {
     //Enums...
     public enum UsersfieldNameEnum {Username,Password,Birthday,FirstName,LastName,City;}
     public enum VacationsfieldNameEnum {Vacation_id,Publisher_Username,Num_Of_Passengers,Vacation_Type,Lodging_Included,Lodging_Rating;}
-    public enum AirportsfieldNameEnum {Airport_Name,Airport_Rating;}
     public enum PurchaseRequestsfieldNameEnum {PurchaseRequest_id,Requester_Username,Vacation_id,Request_Status;}
     public enum FlightsToVacationsfieldNameEnum {Vacation_id,Flight_id,Tickets_type,baggage;}
     public enum PurchasesfieldNameEnum {Username,VacationID,PaymentCompany,CardNumber,CVV,ValidDate,UserID,FirstName,LastName;}
+    public enum FlightsfieldNameEnum {FlightID,OriginAirport,DestinationAirport,DepartureDate,DepartureTime,ArrivalDate,ArrivalTime,FlightComapny;}
 
+    public enum tableNameEnum{Users_table,Vacations_Table,Purchases_Table,Flights_table,FlightsToVacations_Table,PurchaseRequests_Table;}
 
-    public enum tableNameEnum{Users_table,Vacations_Table,Airports_Table;}
     //constructor
     public Model(String databaseName) {
         this.databaseName = databaseName+".db";
@@ -33,8 +33,13 @@ public class Model implements IModel {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+        createNewUsersTable();
+        createNewPurchasesTable();
+        createNewFlightsTable();
+        createNewVacationsTable();
+        createNewPurchaseRequestTable();
+        createNewFlightsToVacationsTable();
     }//creating a new database with the parameter name
-
     public void createNewUsersTable() {
         // SQLite connection string
         Connection c = null;
@@ -71,15 +76,43 @@ public class Model implements IModel {
             stmt = c.createStatement();
             String sql = "CREATE TABLE IF NOT EXISTS Purchases_Table (\n"
                     + "Username text NOT NULL,\n"
-                    + "VacationID tetx NOT NULL,\n"
+                    + "VacationID text NOT NULL,\n"
                     + "PaymentCompany text NOT NULL,\n"
-                    + "CardNumber int,\n"
-                    + "CVV int,\n"
-                    + "ValidDate date,\n"
+                    + "CardNumber text,\n"
+                    + "CVV text,\n"
+                    + "ValidDate text,\n"
                     + "UserID text,\n"
                     + "FirstName text,\n"
                     + "LastName text,\n"
                     + "CONSTRAINT PK_Person PRIMARY KEY (Username,VacationID)"
+                    + ");";
+            stmt.executeUpdate(sql);
+            stmt.close();
+            c.close();
+        }
+        catch ( Exception e ) {
+            e.printStackTrace();
+        }
+    }
+
+    public void createNewFlightsTable(){
+        Connection c = null;
+        Statement stmt = null;
+        String url = "jdbc:sqlite:" + Configuration.loadProperty("directoryPath") + databaseName;
+
+        try{
+            c = DriverManager.getConnection("jdbc:sqlite:"+ Configuration.loadProperty("directoryPath") + databaseName);
+            stmt = c.createStatement();
+            String sql = "CREATE TABLE IF NOT EXISTS Flights_Table (\n"
+                    + "FlightID BIGINT AUTO_INCREMENT NOT NULL,\n"
+                    + "OriginAirport text NOT NULL,\n"
+                    + "DestinationAirport text NOT NULL,\n"
+                    + "DepartureDate text,\n"
+                    + "DepartureTime text,\n"
+                    + "ArrivalDate text,\n"
+                    + "ArrivalTime text,\n"
+                    + "FlightComapny text,\n"
+                    + "CONSTRAINT PK_Person PRIMARY KEY (FlightID)"
                     + ");";
             stmt.executeUpdate(sql);
             stmt.close();
@@ -115,28 +148,6 @@ public class Model implements IModel {
             e.printStackTrace();
         }
     }//creating a new vacations table
-
-    public void createNewAirportsTable() {
-        // SQLite connection string
-        Connection c = null;
-        Statement stmt = null;
-        String url = "jdbc:sqlite:" + Configuration.loadProperty("directoryPath") + databaseName;
-
-        try {
-            c = DriverManager.getConnection("jdbc:sqlite:"+ Configuration.loadProperty("directoryPath") + databaseName);
-            stmt = c.createStatement();
-            String sql = "CREATE TABLE IF NOT EXISTS Airports_Table (\n"
-                    + "Airport_Name text NOT NULL,\n"
-                    + "Airport_Rating text NOT NULL,\n"
-                    + "	PRIMARY KEY (Airport_Name)\n"
-                    + ");";
-            stmt.executeUpdate(sql);
-            stmt.close();
-            c.close();
-        } catch ( Exception e ) {
-            e.printStackTrace();
-        }
-    }//creating a new Airports table
 
     public void createNewPurchaseRequestTable() {
         // SQLite connection string
