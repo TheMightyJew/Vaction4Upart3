@@ -1,4 +1,4 @@
-package Work1;
+package Model;
 
 import java.io.IOException;
 import java.io.InputStream;

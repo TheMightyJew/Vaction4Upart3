@@ -1,4 +1,5 @@
-package Work1;
+package Model;
+
 
 import java.sql.*;
 import java.util.ArrayList;
