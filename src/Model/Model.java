@@ -11,8 +11,13 @@ public class Model implements IModel {
     private String databaseName;
     //Enums...
     public enum UsersfieldNameEnum {Username,Password,Birthday,FirstName,LastName,City;}
+    public enum VacationsfieldNameEnum {Vacation_id,Publisher_Username,Num_Of_Passengers,Vacation_Type,Lodging_Included,Lodging_Rating;}
+    public enum AirportsfieldNameEnum {Airport_Name,Airport_Rating;}
+    public enum PurchaseRequestsfieldNameEnum {PurchaseRequest_id,Requester_Username,Vacation_id,Request_Status;}
+    public enum FlightsToVacationsfieldNameEnum {Vacation_id,Flight_id,Tickets_type,baggage;}
 
-    public enum tableNameEnum{Users_table;}
+
+    public enum tableNameEnum{Users_table,Vacations_Table,Airports_Table;}
     //constructor
     public Model(String databaseName) {
         this.databaseName = databaseName+".db";
@@ -55,6 +60,118 @@ public class Model implements IModel {
         }
     }//creating a new users table
 
+    public void createNewVacationsTable() {
+        // SQLite connection string
+        Connection c = null;
+        Statement stmt = null;
+        String url = "jdbc:sqlite:" + Configuration.loadProperty("directoryPath") + databaseName;
+
+        try {
+            c = DriverManager.getConnection("jdbc:sqlite:"+ Configuration.loadProperty("directoryPath") + databaseName);
+            stmt = c.createStatement();
+            String sql = "CREATE TABLE IF NOT EXISTS Vacations_Table (\n"
+                    + "Vacation_id BIGINT AUTO_INCREMENT,\n"
+                    + "Publisher_Username text NOT NULL,\n"
+                    + "	Num_Of_Passengers text NOT NULL,\n"
+                    + "Vacation_Type text NOT NULL,\n"
+                    + "Lodging_Included text NOT NULL,\n"
+                    + "Lodging_Rating text NOT NULL,\n"
+                    + "	PRIMARY KEY (Vacation_id)\n"
+                    + ");";
+            stmt.executeUpdate(sql);
+            stmt.close();
+            c.close();
+        } catch ( Exception e ) {
+            e.printStackTrace();
+        }
+    }//creating a new vacations table
+
+    public void createNewAirportsTable() {
+        // SQLite connection string
+        Connection c = null;
+        Statement stmt = null;
+        String url = "jdbc:sqlite:" + Configuration.loadProperty("directoryPath") + databaseName;
+
+        try {
+            c = DriverManager.getConnection("jdbc:sqlite:"+ Configuration.loadProperty("directoryPath") + databaseName);
+            stmt = c.createStatement();
+            String sql = "CREATE TABLE IF NOT EXISTS Airports_Table (\n"
+                    + "Airport_Name text NOT NULL,\n"
+                    + "Airport_Rating text NOT NULL,\n"
+                    + "	PRIMARY KEY (Airport_Name)\n"
+                    + ");";
+            stmt.executeUpdate(sql);
+            stmt.close();
+            c.close();
+        } catch ( Exception e ) {
+            e.printStackTrace();
+        }
+    }//creating a new Airports table
+
+    public void createNewPurchaseRequestTable() {
+        // SQLite connection string
+        Connection c = null;
+        Statement stmt = null;
+        String url = "jdbc:sqlite:" + Configuration.loadProperty("directoryPath") + databaseName;
+
+        try {
+            c = DriverManager.getConnection("jdbc:sqlite:"+ Configuration.loadProperty("directoryPath") + databaseName);
+            stmt = c.createStatement();
+            String sql = "CREATE TABLE IF NOT EXISTS PurchaseRequests_Table (\n"
+                    + "PurchaseRequest_id BIGINT AUTO_INCREMENT,\n"
+                    + "Requester_Username text NOT NULL,\n"
+                    + "Vacation_id text NOT NULL,\n"
+                    + "Request_Status text NOT NULL,\n"
+                    + "	PRIMARY KEY (PurchaseRequest_id)\n"
+                    + ");";
+            stmt.executeUpdate(sql);
+            stmt.close();
+            c.close();
+        } catch ( Exception e ) {
+            e.printStackTrace();
+        }
+    }//creating a new PurchaseRequest Table
+
+    public void createNewFlightsToVacationsTable() {
+        // SQLite connection string
+        Connection c = null;
+        Statement stmt = null;
+        String url = "jdbc:sqlite:" + Configuration.loadProperty("directoryPath") + databaseName;
+
+        try {
+            c = DriverManager.getConnection("jdbc:sqlite:"+ Configuration.loadProperty("directoryPath") + databaseName);
+            stmt = c.createStatement();
+            String sql = "CREATE TABLE IF NOT EXISTS FlightsToVacations_Table (\n"
+                    + "Vacation_id text NOT NULL,\n"
+                    + "Flight_id text NOT NULL,\n"
+                    + "Tickets_type text NOT NULL,\n"
+                    + "baggage text NOT NULL,\n"
+                    + "	CONSTRAINT PK_FTV PRIMARY KEY (Vacation_id,Flight_id,Tickets_type,baggage)\n"
+                    + ");";
+            stmt.executeUpdate(sql);
+            stmt.close();
+            c.close();
+        } catch ( Exception e ) {
+            e.printStackTrace();
+        }
+    }//creating a new FlightsToVacations Table
+
+
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //functional functions:
+    //
+    //
+    //
+    //
+    //
+    //
+
     private void insertQuery(String table_name,Class<? extends Enum<?>> tableEnum, String[] insert_values) {
         String [] field_array = getNames(tableEnum);
         String sql = "INSERT INTO "+table_name+"(";
@@ -73,7 +190,13 @@ public class Model implements IModel {
         try (Connection conn = connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             for (int i=0;i<field_array.length;i++){
-                pstmt.setString(i+1, insert_values[i]);
+                if(i>= insert_values.length){
+                    pstmt.setString(i+1, "");
+                }
+                else{
+                    pstmt.setString(i+1, insert_values[i]);
+                }
+
             }
             pstmt.executeUpdate();
         } catch (SQLException e) {
@@ -120,7 +243,13 @@ public class Model implements IModel {
 
             // set the corresponding param
             for (int j=0;j<fields_array.length;j++){
-                pstmt.setString(j+1, update_values[j]);
+                if (j>= update_values.length){
+                    pstmt.setString(j+1, "");
+                }
+                else{
+                    pstmt.setString(j+1, update_values[j]);
+                }
+
             }
             // update
             pstmt.executeUpdate();
