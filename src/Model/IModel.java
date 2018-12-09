@@ -9,80 +9,91 @@ import java.util.List;
 
 public interface IModel {
     //Users Actions
-    void UsersTable_createUser(String Username_val,String Password_val,String Birthday_val, String FirstName_val,String LastName_val,String City_val);
-    String[] UsersTable_getUserByUsername(String Username_val);
-    void UsersTable_updateUserInfoByUsername(String Username_key, String Username_val,String Password_val,String Birthday_val, String FirstName_val,String LastName_val,String City_val);
-    void UsersTable_deleteUserByUsername(String Username_val);
-    boolean UsersTable_existingUsername(String username);
+    void createUser(String Username_val, String Password_val, String Birthday_val, String FirstName_val, String LastName_val, String City_val);
+
+    String[] getUser(String Username_val);
+
+    void updateUserInfo(String Username_key, String Username_val, String Password_val, String Birthday_val, String FirstName_val, String LastName_val, String City_val);
+
+    void deleteUser(String Username_val);
+
+    boolean userExist(String username);
+
     //update top functions to this functions:
-    void UsersTable_createUser(User user);
-    void UsersTable_updateUserInfoByUsername(String username,User user);
+    void createUser(User user);
+
+    void updateUserInfo(String username, User user);
     //new functions:
 
     /**
-     * put the vacation in the database with id that you decide and a VacationSell.Vacation_Status=available
-     * @param vacation
-     * @return if publish succeeded;
+     * This functions should put the vacation in the database with unique id.
+     * need to apply: VacationSell.Vacation_Status=VacationSell.Vacation_Status.available
+     *
+     * @param vacation - vacation info from user that want to sell
+     * @return if publish succeeded.
      */
     boolean publishVacation(Vacation vacation);
 
     /**
-     * put the request in the database with id that you decide and a PurchaseRequst.Request_Status=pending
-     * @param request
-     * @return if send succeeded;
+     * Value will be null if user not requested the specific limitation(boolean will not)
+     *
+     * @param flightCompany       -
+     * @param fromDate            - The vacation first flight should be from this date or after
+     * @param toDate              - The vacation last flight should be from this date or before
+     * @param baggage             - If baggage included
+     * @param baggageMin          - The vacation
+     * @param ticketsNum          - The number of tickets the user want to be possible to purchase from the vacation
+     * @param tickets_type        -
+     * @param maxPricePerTicket   - The vacation
+     *
+     * @param sourceCountry       -
+     * @param destCountry         -
+     * @param vacation_type       -
+     * @param hospitalityIncluded -
+     * @param minHospitalityRank  -
+     * @return list of vacationsell where status=available;
+     */
+    List<VacationSell> getVacations(String flightCompany, Date fromDate, Date toDate, boolean baggage, Integer baggageMin, Integer ticketsNum, Vacation.Tickets_Type tickets_type, Integer maxPricePerTicket, String sourceCountry, String destCountry, Vacation.Vacation_Type vacation_type, boolean hospitalityIncluded, Integer minHospitalityRank);
+
+    /**
+     * This functions should put the request in the database with unique id
+     * need to apply: PurchaseRequest.Request_Status=PurchaseRequest.Request_Status.pending
+     *
+     * @param request - request from a user that want to buy certain vacation
+     * @return if request application succeeded.
      */
     boolean sendRequest(Request request);
 
     /**
-     * get the requests that username user sent to other users.
-     * @param username
-     * @return
+     * @param username -
+     * @return the requests that the given username's user sent to other users
      */
     List<PurchaseRequest> getMyRequests(String username);
 
     /**
-     * save payment to database using payment.tostring function.
-     * @param requestId
-     * @param payment
-     * @return
-     */
-    boolean payForVacation(int requestId,Payment payment);
-    /**
      * get the request that username user received from other users.
+     *
      * @param username
      * @return
      */
     List<PurchaseRequest> getReceivedRequests(String username);
 
     /**
-     *
      * @param requestId
      */
     void acceptRequest(int requestId);
 
     /**
-     *
      * @param requestId
      */
     void rejectRequest(int requestId);
 
     /**
+     * save payment to database using payment.tostring function.
      *
-     * @param flightCompany
-     * @param fromDate
-     * @param toDate
-     * @param baggage
-     * @param baggageMin
-     * @param ticketsNum
-     * @param tickets_type
-     * @param maxPricePerTicket
-     * @param sourceCountry
-     * @param destCountry
-     * @param vacation_type
-     * @param hospitalityIncluded
-     * @param minHospitalityRank
-     * @return list of vacationsell where status=available;
+     * @param requestId
+     * @param payment
+     * @return
      */
-    List<VacationSell> getVacations(String flightCompany, Date fromDate, Date toDate, boolean baggage, int baggageMin, int ticketsNum, Vacation.Tickets_Type tickets_type,int maxPricePerTicket, String sourceCountry, String destCountry, Vacation.Vacation_Type vacation_type, boolean hospitalityIncluded, int minHospitalityRank);
-
+    boolean payForVacation(int requestId, Payment payment);
 }

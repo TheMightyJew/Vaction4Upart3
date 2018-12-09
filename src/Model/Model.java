@@ -290,13 +290,13 @@ public class Model implements IModel {
 
     // Users_Table
     @Override
-    public void UsersTable_createUser(String Username_val, String Password_val, String Birthday_val, String FirstName_val, String LastName_val, String City_val) {
+    public void createUser(String Username_val, String Password_val, String Birthday_val, String FirstName_val, String LastName_val, String City_val) {
         String [] values = {Username_val,Password_val,Birthday_val,FirstName_val,LastName_val,City_val};
         insertQuery("Users_Table",UsersfieldNameEnum.class,values);
     }
 
     @Override
-    public String[] UsersTable_getUserByUsername(String Username_val) {
+    public String[] getUser(String Username_val) {
         List<String[]> result = selectQuery("Users_Table",UsersfieldNameEnum.Username + " = '" + Username_val+"'");
         if(result.size() != 1)
             return null;
@@ -305,19 +305,19 @@ public class Model implements IModel {
     }
 
     @Override
-    public void UsersTable_updateUserInfoByUsername(String Username_key, String Username_val, String Password_val, String Birthday_val, String FirstName_val, String LastName_val, String City_val) {
+    public void updateUserInfo(String Username_key, String Username_val, String Password_val, String Birthday_val, String FirstName_val, String LastName_val, String City_val) {
         String [] values = {Username_val,Password_val,Birthday_val,FirstName_val,LastName_val,City_val};
         updateQuery(tableNameEnum.Users_table.toString(),UsersfieldNameEnum.class,values,UsersfieldNameEnum.Username.toString() + " = '" + Username_key+"'");
     }
 
     @Override
-    public void UsersTable_deleteUserByUsername(String Username_key) {
+    public void deleteUser(String Username_key) {
         deleteQuery(tableNameEnum.Users_table.toString(),UsersfieldNameEnum.Username + " = '" + Username_key + "'");
     }
 
     @Override
-    public boolean UsersTable_existingUsername(String username) {
-        if(UsersTable_getUserByUsername(username) == null)
+    public boolean userExist(String username) {
+        if(getUser(username) == null)
             return false;
         else
             return true;

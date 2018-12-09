@@ -198,14 +198,14 @@ public class Controller implements Initializable {
         else if(passwordCreate.getText().equals(confirmCreate.getText())==false){
             error("Password must be match in both options");
         }
-        else if(model.UsersTable_existingUsername(usernameCreate.getText())==true){
+        else if(model.userExist(usernameCreate.getText())==true){
             error("Username already taken");
         }
         else if(dateCheck(birthCreate.getValue())==false){
             error("Age must be at least 18");
         }
         else if(confirm("Are you sure you want to Create an account with these details?")){
-            model.UsersTable_createUser(usernameCreate.getText(),passwordCreate.getText(),DatePicker2Str(birthCreate),firstCreate.getText(),lastCreate.getText(),cityCreate.getText());
+            model.createUser(usernameCreate.getText(),passwordCreate.getText(),DatePicker2Str(birthCreate),firstCreate.getText(),lastCreate.getText(),cityCreate.getText());
             info("User creation was made successfully!");
             event.consume();
             return true;
@@ -236,7 +236,7 @@ public class Controller implements Initializable {
     }
 
     private void signIn(ActionEvent event, String username, String password) {
-        if(model.UsersTable_existingUsername(username)==false){
+        if(model.userExist(username)==false){
             error("Username is incorrect");
             event.consume();
         }
@@ -277,14 +277,14 @@ public class Controller implements Initializable {
     public void delete(ActionEvent event){
         if(confirm("Are you sure you want to delete your account?")){
             info("Your account was deleted successfully!");
-            model.UsersTable_deleteUserByUsername(username);
+            model.deleteUser(username);
             tabSignOut();
         }
         event.consume();
     }
 
     public void show(ActionEvent event){
-        if(model.UsersTable_existingUsername(usernameRead.getText())==true){
+        if(model.userExist(usernameRead.getText())==true){
             firstRead.setText(getFirstName(username));
             lastRead.setText(getLastName(username));
             birthRead.setText(getBirthday(username));
@@ -300,7 +300,7 @@ public class Controller implements Initializable {
             info("Please fill all the fields");
             event.consume();
         }
-        else if(model.UsersTable_existingUsername(usernameUpdate.getText())==true && usernameUpdate.getText().equals(this.username)==false){
+        else if(model.userExist(usernameUpdate.getText())==true && usernameUpdate.getText().equals(this.username)==false){
             error("Username already taken");
             event.consume();
         }
@@ -313,7 +313,7 @@ public class Controller implements Initializable {
             event.consume();
         }
         else if(confirm("Are you sure you want to update the details?")){
-            model.UsersTable_updateUserInfoByUsername(username,usernameUpdate.getText(),passwordUpdate.getText(),DatePicker2Str(birthUpdate),firstUpdate.getText(),lastUpdate.getText(),cityUpdate.getText());
+            model.updateUserInfo(username,usernameUpdate.getText(),passwordUpdate.getText(),DatePicker2Str(birthUpdate),firstUpdate.getText(),lastUpdate.getText(),cityUpdate.getText());
             if(usernameRead.getText().equals(this.username)==true){
                 clearRead();
             }
@@ -352,27 +352,27 @@ public class Controller implements Initializable {
     }
 
     private String[] getDetails(String username){
-        return model.UsersTable_getUserByUsername(username);
+        return model.getUser(username);
     }
 
     private String getPassword(String username){
-        return model.UsersTable_getUserByUsername(username)[Model.UsersfieldNameEnum.Password.ordinal()];
+        return model.getUser(username)[Model.UsersfieldNameEnum.Password.ordinal()];
     }
 
     private String getBirthday(String username){
-        return model.UsersTable_getUserByUsername(username)[Model.UsersfieldNameEnum.Birthday.ordinal()];
+        return model.getUser(username)[Model.UsersfieldNameEnum.Birthday.ordinal()];
     }
 
     private String getFirstName(String username){
-        return model.UsersTable_getUserByUsername(username)[Model.UsersfieldNameEnum.FirstName.ordinal()];
+        return model.getUser(username)[Model.UsersfieldNameEnum.FirstName.ordinal()];
     }
 
     private String getLastName(String username){
-        return model.UsersTable_getUserByUsername(username)[Model.UsersfieldNameEnum.LastName.ordinal()];
+        return model.getUser(username)[Model.UsersfieldNameEnum.LastName.ordinal()];
     }
 
     private String getCity(String username){
-        return model.UsersTable_getUserByUsername(username)[Model.UsersfieldNameEnum.City.ordinal()];
+        return model.getUser(username)[Model.UsersfieldNameEnum.City.ordinal()];
     }
 
     private boolean dateCheck(LocalDate date){
