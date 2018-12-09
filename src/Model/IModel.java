@@ -11,7 +11,7 @@ public interface IModel {
     //Users Actions
     void createUser(String Username_val, String Password_val, String Birthday_val, String FirstName_val, String LastName_val, String City_val,String State_val);
 
-    String[] getUser(String Username_val);
+    User getUser(String Username_val);
 
     void updateUserInfo(String Username_key, String Username_val, String Password_val, String Birthday_val, String FirstName_val, String LastName_val, String City_val,String State_val);
 

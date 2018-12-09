@@ -59,7 +59,7 @@ public class Model implements IModel {
                     + "	Birthday text NOT NULL,\n"
                     + "	FirstName text NOT NULL,\n"
                     + "	LastName text NOT NULL,\n"
-                    + "	City text NOT NULL\n"
+                    + "	City text NOT NULL,\n"
                     + "	State text NOT NULL\n"
                     + ");";
             stmt.executeUpdate(sql);
@@ -341,12 +341,15 @@ public class Model implements IModel {
     }
 
     @Override
-    public String[] getUser(String Username_val) {
+    public User getUser(String Username_val) {
         List<String[]> result = selectQuery("Users_Table",UsersfieldNameEnum.Username + " = '" + Username_val+"'");
         if(result.size() != 1)
             return null;
-        else
-            return result.get(0);
+        else{
+            String[] ans = result.get(0);
+            Date bDate = new Date(ans[2]);
+            return new User(ans[0],ans[1],bDate,ans[3],ans[4],ans[5],ans[6]);
+        }
     }
 
     @Override
@@ -377,7 +380,7 @@ public class Model implements IModel {
     @Override
     public boolean createUser(User user) {
         try {
-            String user_birth_date = user.getBirth_Date().toString();
+            String user_birth_date = user.getBirth_Date().getMonth()+"/"+user.getBirth_Date().getDay()+"/"+user.getBirth_Date().getYear();
             String[] values = {user.getUsername(), user.getPassword(), user_birth_date, user.getFirst_Name(), user.getLast_Name(), user.getCity(), user.getCountry()};
             insertQuery("Users_Table", UsersfieldNameEnum.class, values);
             return true;
@@ -452,5 +455,10 @@ public class Model implements IModel {
 
     //todo all function below
 
+    public static void main(String[] args) {
+        Model model=new Model("Vaction4U");
 
+
+
+    }
 }
