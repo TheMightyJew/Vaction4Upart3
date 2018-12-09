@@ -1,5 +1,6 @@
-package Work1;
+package Controller;
 
+import Model.Model;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
