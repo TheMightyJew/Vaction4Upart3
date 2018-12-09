@@ -26,7 +26,7 @@ public class Model implements IModel {
     // private functions (generics)
     private void createNewDatabase() {
 
-        String url = "jdbc:sqlite:"+ Configuration.loadProperty("directoryPath") + databaseName;
+        String url = "jdbc:sqlite:resources/" /*Configuration.loadProperty("directoryPath")*/ + databaseName;
 
         try (Connection conn = DriverManager.getConnection(url)) {
             conn.close();
