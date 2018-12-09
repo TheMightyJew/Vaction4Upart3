@@ -1,9 +1,12 @@
 package Model;
 
 
+import Model.Objects.*;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 public class Model implements IModel {
@@ -12,12 +15,13 @@ public class Model implements IModel {
     //Enums...
     public enum UsersfieldNameEnum {Username,Password,Birthday,FirstName,LastName,City;}
     public enum VacationsfieldNameEnum {Vacation_id,Publisher_Username,Num_Of_Passengers,Vacation_Type,Lodging_Included,Lodging_Rating;}
-    public enum AirportsfieldNameEnum {Airport_Name,Airport_Rating;}
     public enum PurchaseRequestsfieldNameEnum {PurchaseRequest_id,Requester_Username,Vacation_id,Request_Status;}
     public enum FlightsToVacationsfieldNameEnum {Vacation_id,Flight_id,Tickets_type,baggage;}
+    public enum PurchasesfieldNameEnum {Username,VacationID,PaymentCompany,CardNumber,CVV,ValidDate,UserID,FirstName,LastName;}
+    public enum FlightsfieldNameEnum {FlightID,OriginAirport,DestinationAirport,DepartureDate,DepartureTime,ArrivalDate,ArrivalTime,FlightComapny;}
 
+    public enum tableNameEnum{Users_table,Vacations_Table,Purchases_Table,Flights_table,FlightsToVacations_Table,PurchaseRequests_Table;}
 
-    public enum tableNameEnum{Users_table,Vacations_Table,Airports_Table;}
     //constructor
     public Model(String databaseName) {
         this.databaseName = databaseName+".db";
@@ -26,15 +30,20 @@ public class Model implements IModel {
     // private functions (generics)
     private void createNewDatabase() {
 
-        String url = "jdbc:sqlite:"+ Configuration.loadProperty("directoryPath") + databaseName;
+        String url = "jdbc:sqlite:resources/" /*Configuration.loadProperty("directoryPath")*/ + databaseName;
 
         try (Connection conn = DriverManager.getConnection(url)) {
             conn.close();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+        createNewUsersTable();
+        createNewPurchasesTable();
+        createNewFlightsTable();
+        createNewVacationsTable();
+        createNewPurchaseRequestTable();
+        createNewFlightsToVacationsTable();
     }//creating a new database with the parameter name
-
     public void createNewUsersTable() {
         // SQLite connection string
         Connection c = null;
@@ -51,6 +60,7 @@ public class Model implements IModel {
                     + "	FirstName text NOT NULL,\n"
                     + "	LastName text NOT NULL,\n"
                     + "	City text NOT NULL\n"
+                    + "	State text NOT NULL\n"
                     + ");";
             stmt.executeUpdate(sql);
             stmt.close();
@@ -59,6 +69,63 @@ public class Model implements IModel {
             e.printStackTrace();
         }
     }//creating a new users table
+
+    public void createNewPurchasesTable(){
+        Connection c = null;
+        Statement stmt = null;
+        String url = "jdbc:sqlite:" + Configuration.loadProperty("directoryPath") + databaseName;
+
+        try{
+            c = DriverManager.getConnection("jdbc:sqlite:"+ Configuration.loadProperty("directoryPath") + databaseName);
+            stmt = c.createStatement();
+            String sql = "CREATE TABLE IF NOT EXISTS Purchases_Table (\n"
+                    + "Username text NOT NULL,\n"
+                    + "VacationID text NOT NULL,\n"
+                    + "PaymentCompany text NOT NULL,\n"
+                    + "CardNumber text,\n"
+                    + "CVV text,\n"
+                    + "ValidDate text,\n"
+                    + "UserID text,\n"
+                    + "FirstName text,\n"
+                    + "LastName text,\n"
+                    + "CONSTRAINT PK_Person PRIMARY KEY (Username,VacationID)"
+                    + ");";
+            stmt.executeUpdate(sql);
+            stmt.close();
+            c.close();
+        }
+        catch ( Exception e ) {
+            e.printStackTrace();
+        }
+    }
+
+    public void createNewFlightsTable(){
+        Connection c = null;
+        Statement stmt = null;
+        String url = "jdbc:sqlite:" + Configuration.loadProperty("directoryPath") + databaseName;
+
+        try{
+            c = DriverManager.getConnection("jdbc:sqlite:"+ Configuration.loadProperty("directoryPath") + databaseName);
+            stmt = c.createStatement();
+            String sql = "CREATE TABLE IF NOT EXISTS Flights_Table (\n"
+                    + "FlightID BIGINT AUTO_INCREMENT NOT NULL,\n"
+                    + "OriginAirport text NOT NULL,\n"
+                    + "DestinationAirport text NOT NULL,\n"
+                    + "DepartureDate text,\n"
+                    + "DepartureTime text,\n"
+                    + "ArrivalDate text,\n"
+                    + "ArrivalTime text,\n"
+                    + "FlightComapny text,\n"
+                    + "CONSTRAINT PK_Person PRIMARY KEY (FlightID)"
+                    + ");";
+            stmt.executeUpdate(sql);
+            stmt.close();
+            c.close();
+        }
+        catch ( Exception e ) {
+            e.printStackTrace();
+        }
+    }
 
     public void createNewVacationsTable() {
         // SQLite connection string
@@ -85,28 +152,6 @@ public class Model implements IModel {
             e.printStackTrace();
         }
     }//creating a new vacations table
-
-    public void createNewAirportsTable() {
-        // SQLite connection string
-        Connection c = null;
-        Statement stmt = null;
-        String url = "jdbc:sqlite:" + Configuration.loadProperty("directoryPath") + databaseName;
-
-        try {
-            c = DriverManager.getConnection("jdbc:sqlite:"+ Configuration.loadProperty("directoryPath") + databaseName);
-            stmt = c.createStatement();
-            String sql = "CREATE TABLE IF NOT EXISTS Airports_Table (\n"
-                    + "Airport_Name text NOT NULL,\n"
-                    + "Airport_Rating text NOT NULL,\n"
-                    + "	PRIMARY KEY (Airport_Name)\n"
-                    + ");";
-            stmt.executeUpdate(sql);
-            stmt.close();
-            c.close();
-        } catch ( Exception e ) {
-            e.printStackTrace();
-        }
-    }//creating a new Airports table
 
     public void createNewPurchaseRequestTable() {
         // SQLite connection string
@@ -323,6 +368,7 @@ public class Model implements IModel {
             return true;
     }
 
+
     public boolean UsersTable_checkPassword(String Username_val,String Password_val) {
         List<String[]> result = selectQuery("Users_Table",UsersfieldNameEnum.Username + " = '" + Username_val+"'");
         if(result.size() != 1)
@@ -331,6 +377,59 @@ public class Model implements IModel {
             return false;
         return true;
     }
+
+    //todo all function below
+
+    @Override
+    public void UsersTable_createUser(User user) {
+
+    }
+
+    @Override
+    public void UsersTable_updateUserInfoByUsername(String username, User user) {
+
+    }
+
+    @Override
+    public boolean publishVacation(Vacation vacation) {
+        return false;
+    }
+
+    @Override
+    public boolean sendRequest(Request request) {
+        return false;
+    }
+
+    @Override
+    public List<PurchaseRequest> getMyRequests(String username) {
+        return null;
+    }
+
+    @Override
+    public boolean payForVacation(int requestId, Payment payment) {
+        return false;
+    }
+
+    @Override
+    public List<PurchaseRequest> getReceivedRequests(String username) {
+        return null;
+    }
+
+    @Override
+    public void acceptRequest(int requestId) {
+
+    }
+
+    @Override
+    public void rejectRequest(int requestId) {
+
+    }
+
+    @Override
+    public List<VacationSell> getVacations(String flightCompany, Date fromDate, Date toDate, boolean baggage, int baggageMin, int ticketsNum, Vacation.Tickets_Type tickets_type, int maxPricePerTicket, String sourceCountry, String destCountry, Vacation.Vacation_Type vacation_type, boolean hospitalityIncluded, int minHospitalityRank) {
+        return null;
+    }
+
 
 
 }

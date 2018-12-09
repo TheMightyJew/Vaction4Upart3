@@ -104,7 +104,6 @@ public class Controller implements Initializable {
 
     public void setModel(Model model){
         this.model=model;
-        model.createNewUsersTable();
     }
 
     public void tabSignOut(){
