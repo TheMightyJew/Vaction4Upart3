@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.List;
 
 public class Model implements IModel {
+
     //attributes
     private String databaseName;
     //Enums...
@@ -30,7 +31,7 @@ public class Model implements IModel {
     // private functions (generics)
     private void createNewDatabase() {
 
-        String url = "jdbc:sqlite:resources/" /*Configuration.loadProperty("directoryPath")*/ + databaseName;
+        String url = "jdbc:sqlite:" +Configuration.loadProperty("directoryPath") + databaseName;
 
         try (Connection conn = DriverManager.getConnection(url)) {
             conn.close();
@@ -59,7 +60,7 @@ public class Model implements IModel {
                     + "	Birthday text NOT NULL,\n"
                     + "	FirstName text NOT NULL,\n"
                     + "	LastName text NOT NULL,\n"
-                    + "	City text NOT NULL\n"
+                    + "	City text NOT NULL,\n"
                     + "	State text NOT NULL\n"
                     + ");";
             stmt.executeUpdate(sql);
@@ -340,24 +341,25 @@ public class Model implements IModel {
         insertQuery("Users_Table",UsersfieldNameEnum.class,values);
     }
 
-    @Override
-    public String[] getUser(String Username_val) {
-        List<String[]> result = selectQuery("Users_Table",UsersfieldNameEnum.Username + " = '" + Username_val+"'");
-        if(result.size() != 1)
-            return null;
-        else
-            return result.get(0);
-    }
+//    @Override
+//    public String[] getUser(String Username_val) {
+//        List<String[]> result = selectQuery("Users_Table",UsersfieldNameEnum.Username + " = '" + Username_val+"'");
+//        if(result.size() != 1)
+//            return null;
+//        else
+//            return result.get(0);
+//    }
+
+//    @Override
+//    public void updateUserInfo(String Username_key, String Username_val, String Password_val, String Birthday_val, String FirstName_val, String LastName_val, String City_val) {
+//        String [] values = {Username_val,Password_val,Birthday_val,FirstName_val,LastName_val,City_val};
+//        updateQuery(tableNameEnum.Users_table.toString(),UsersfieldNameEnum.class,values,UsersfieldNameEnum.Username.toString() + " = '" + Username_key+"'");
+//    }
 
     @Override
-    public void updateUserInfo(String Username_key, String Username_val, String Password_val, String Birthday_val, String FirstName_val, String LastName_val, String City_val) {
-        String [] values = {Username_val,Password_val,Birthday_val,FirstName_val,LastName_val,City_val};
-        updateQuery(tableNameEnum.Users_table.toString(),UsersfieldNameEnum.class,values,UsersfieldNameEnum.Username.toString() + " = '" + Username_key+"'");
-    }
-
-    @Override
-    public void deleteUser(String Username_key) {
+    public boolean deleteUser(String Username_key) {
         deleteQuery(tableNameEnum.Users_table.toString(),UsersfieldNameEnum.Username + " = '" + Username_key + "'");
+        return false;
     }
 
     @Override
@@ -366,6 +368,23 @@ public class Model implements IModel {
             return false;
         else
             return true;
+    }
+
+    @Override
+    public boolean createUser(User user) {
+
+        return false;
+    }
+
+    @Override
+    public User getUser(String Username_val) {
+        return null;
+    }
+
+    @Override
+    public boolean updateUserInfo(String username, User user) {
+
+        return false;
     }
 
 
@@ -380,12 +399,9 @@ public class Model implements IModel {
 
     //todo all function below
 
-    @Override
     public void UsersTable_createUser(User user) {
-
     }
 
-    @Override
     public void UsersTable_updateUserInfoByUsername(String username, User user) {
 
     }
@@ -393,6 +409,11 @@ public class Model implements IModel {
     @Override
     public boolean publishVacation(Vacation vacation) {
         return false;
+    }
+
+    @Override
+    public List<VacationSell> getVacations(String flightCompany, Date fromDate, Date toDate, boolean baggage, Integer baggageMin, Integer ticketsNum, Vacation.Tickets_Type tickets_type, Integer maxPricePerTicket, String sourceCountry, String destCountry, Vacation.Vacation_Type vacation_type, boolean hospitalityIncluded, Integer minHospitalityRank) {
+        return null;
     }
 
     @Override
@@ -425,7 +446,6 @@ public class Model implements IModel {
 
     }
 
-    @Override
     public List<VacationSell> getVacations(String flightCompany, Date fromDate, Date toDate, boolean baggage, int baggageMin, int ticketsNum, Vacation.Tickets_Type tickets_type, int maxPricePerTicket, String sourceCountry, String destCountry, Vacation.Vacation_Type vacation_type, boolean hospitalityIncluded, int minHospitalityRank) {
         return null;
     }

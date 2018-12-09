@@ -49,6 +49,14 @@ public class Flight {
     public String getLandHour() {
         return landHour;
     }
+
+    public int compare(Flight flight){
+        if(this.departDate.compareTo(flight.departDate)<0)
+            return -1;
+        else if(this.departDate.compareTo(flight.departDate)>0)
+            return 1;
+        return this.departHour.compareTo(flight.departHour);
+    }
 }
 
 

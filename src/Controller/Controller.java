@@ -1,13 +1,18 @@
 package Controller;
 
 import Model.Model;
+import Model.Objects.User;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.util.StringConverter;
 import java.net.URL;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -30,6 +35,7 @@ public class Controller implements Initializable {
     public Label lastHome;
     public Label birthHome;
     public Label cityHome;
+    public Label countryHome;
     public Button delete;
     public Button signOut;
     //Create tab
@@ -40,6 +46,7 @@ public class Controller implements Initializable {
     public TextField lastCreate;
     public DatePicker birthCreate;
     public TextField cityCreate;
+    public TextField countryCreate;
     public Button create;
     //Read tab
     public TextField usernameRead;
@@ -48,6 +55,7 @@ public class Controller implements Initializable {
     public Label lastRead;
     public Label birthRead;
     public Label cityRead;
+    public Label countryRead;
     //update tab
     public TextField usernameUpdate;
     public TextField passwordUpdate;
@@ -56,6 +64,7 @@ public class Controller implements Initializable {
     public TextField lastUpdate;
     public DatePicker birthUpdate;
     public TextField cityUpdate;
+    public TextField countryUpdate;
     public Button update;
 
     final String directoryPath = "C:/DATABASE/";//////
@@ -161,6 +170,7 @@ public class Controller implements Initializable {
         lastHome.setText("");
         birthHome.setText("");
         cityHome.setText("");
+        countryHome.setText("");
     }
 
     private void clearCreate() {
@@ -171,6 +181,7 @@ public class Controller implements Initializable {
         firstCreate.clear();
         cityCreate.clear();
         birthCreate.setValue(null);
+        countryCreate.clear();
     }
 
     private void clearRead() {
@@ -179,6 +190,7 @@ public class Controller implements Initializable {
         lastRead.setText("");
         birthRead.setText("");
         cityRead.setText("");
+        countryRead.setText("");
     }
 
     private void clearUpdate() {
@@ -188,6 +200,7 @@ public class Controller implements Initializable {
         lastUpdate.clear();
         birthUpdate.setValue(null);
         cityUpdate.clear();
+        countryUpdate.clear();
     }
 
     public boolean create(ActionEvent event) {
@@ -204,7 +217,8 @@ public class Controller implements Initializable {
             error("Age must be at least 18");
         }
         else if(confirm("Are you sure you want to Create an account with these details?")){
-            model.createUser(usernameCreate.getText(),passwordCreate.getText(),DatePicker2Str(birthCreate),firstCreate.getText(),lastCreate.getText(),cityCreate.getText());
+            //model.createUser(usernameCreate.getText(),passwordCreate.getText(),DatePicker2Str(birthCreate),firstCreate.getText(),lastCreate.getText(),cityCreate.getText());
+            model.createUser(new User(usernameCreate.getText(),passwordCreate.getText(),birthCreate.getValue(),firstCreate.getText(),lastCreate.getText(),cityCreate.getText(),countryCreate.getText()));
             info("User creation was made successfully!");
             event.consume();
             return true;
@@ -213,18 +227,14 @@ public class Controller implements Initializable {
         return false;
     }
 
-    private String DatePicker2Str(DatePicker value) {
-        return (value.getValue().getDayOfMonth()+"/"+value.getValue().getMonthValue()+"/"+value.getValue().getYear());
-    }
-
     private boolean createEmpty() {
-        if(usernameCreate.getText().isEmpty() || passwordCreate.getText().isEmpty() || firstCreate.getText().isEmpty() || lastCreate.getText().isEmpty() || birthCreate.getValue()==null || birthCreate.getValue().toString().isEmpty() || cityCreate.getText().isEmpty())
+        if(usernameCreate.getText().isEmpty() || passwordCreate.getText().isEmpty() || firstCreate.getText().isEmpty() || lastCreate.getText().isEmpty() || birthCreate.getValue()==null || birthCreate.getValue().toString().isEmpty() || cityCreate.getText().isEmpty() || countryCreate.getText().isEmpty())
             return true;
         else
             return false;
     }
     private boolean updateEmpty() {
-        if(usernameUpdate.getText().isEmpty() || passwordUpdate.getText().isEmpty() || firstUpdate.getText().isEmpty() || lastUpdate.getText().isEmpty() || birthUpdate.getValue()==null || birthUpdate.getValue().toString().isEmpty() || cityUpdate.getText().isEmpty())
+        if(usernameUpdate.getText().isEmpty() || passwordUpdate.getText().isEmpty() || firstUpdate.getText().isEmpty() || lastUpdate.getText().isEmpty() || birthUpdate.getValue()==null || birthUpdate.getValue().toString().isEmpty() || cityUpdate.getText().isEmpty() || countryUpdate.getText().isEmpty())
             return true;
         else
             return false;
@@ -252,18 +262,15 @@ public class Controller implements Initializable {
     }
 
     private void fillUpdate(String username) {
-        usernameUpdate.setText(username);
-        passwordUpdate.setText(getPassword(username));
-        confirmUpdate.setText(getPassword(username));
-        firstUpdate.setText(getFirstName(username));
-        lastUpdate.setText(getLastName(username));
-        birthUpdate.setValue(parseBirthday(username));
-        cityUpdate.setText(getCity(username));
-    }
-
-    private LocalDate parseBirthday(String username) {
-        String[] details=getBirthday(username).split("/");
-        return LocalDate.of(Integer.parseInt(details[2]),Integer.parseInt(details[1]),Integer.parseInt(details[0]));
+        User user=model.getUser(username);
+        usernameUpdate.setText(user.getUsername());
+        passwordUpdate.setText(user.getPassword());
+        confirmUpdate.setText(user.getPassword());
+        firstUpdate.setText(user.getFirst_Name());
+        lastUpdate.setText(user.getLast_Name());
+        birthUpdate.setValue(user.getBirth_Date());
+        cityUpdate.setText(user.getCity());
+        countryUpdate.setText(user.getCountry());
     }
 
 
@@ -284,16 +291,25 @@ public class Controller implements Initializable {
 
     public void show(ActionEvent event){
         if(model.userExist(usernameRead.getText())==true){
-            firstRead.setText(getFirstName(username));
-            lastRead.setText(getLastName(username));
-            birthRead.setText(getBirthday(username));
-            cityRead.setText(getCity(username));
+            User user=model.getUser(username);
+            firstRead.setText(user.getFirst_Name());
+            lastRead.setText(user.getLast_Name());
+            birthRead.setText(localDate2Str(user.getBirth_Date()));
+            cityRead.setText(user.getCity());
+            countryRead.setText(user.getCountry());
         }
         else {
             error("Username is incorrect");
             event.consume();
         }
     }
+
+    private String localDate2Str(LocalDate birth_date) {
+        String str;
+        str=birth_date.getDayOfMonth()+"-"+birth_date.getMonthValue()+"-"+birth_date.getYear();
+        return str;
+    }
+
     public void update(ActionEvent event){
         if(updateEmpty()==true){
             info("Please fill all the fields");
@@ -312,7 +328,7 @@ public class Controller implements Initializable {
             event.consume();
         }
         else if(confirm("Are you sure you want to update the details?")){
-            model.updateUserInfo(username,usernameUpdate.getText(),passwordUpdate.getText(),DatePicker2Str(birthUpdate),firstUpdate.getText(),lastUpdate.getText(),cityUpdate.getText());
+            model.updateUserInfo(username,new User(usernameUpdate.getText(),passwordUpdate.getText(),birthUpdate.getValue(),firstUpdate.getText(),lastUpdate.getText(),cityUpdate.getText(),countryUpdate.getText()));
             if(usernameRead.getText().equals(this.username)==true){
                 clearRead();
             }
@@ -324,11 +340,13 @@ public class Controller implements Initializable {
     }
 
     private void updateHome(String username) {
+        User user=model.getUser(username);
         usernameHome.setText(username);
-        firstHome.setText(getFirstName(username));
-        lastHome.setText(getLastName(username));
-        birthHome.setText(getBirthday(username));
-        cityHome.setText(getCity(username));
+        firstHome.setText(user.getFirst_Name());
+        lastHome.setText(user.getLast_Name());
+        birthHome.setText(localDate2Str(user.getBirth_Date()));
+        cityHome.setText(user.getCity());
+        countryHome.setText(user.getCountry());
     }
 
     public boolean confirm(String massage){
@@ -348,30 +366,6 @@ public class Controller implements Initializable {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setContentText(massage);
         Optional<ButtonType> result = alert.showAndWait();
-    }
-
-    private String[] getDetails(String username){
-        return model.getUser(username);
-    }
-
-    private String getPassword(String username){
-        return model.getUser(username)[Model.UsersfieldNameEnum.Password.ordinal()];
-    }
-
-    private String getBirthday(String username){
-        return model.getUser(username)[Model.UsersfieldNameEnum.Birthday.ordinal()];
-    }
-
-    private String getFirstName(String username){
-        return model.getUser(username)[Model.UsersfieldNameEnum.FirstName.ordinal()];
-    }
-
-    private String getLastName(String username){
-        return model.getUser(username)[Model.UsersfieldNameEnum.LastName.ordinal()];
-    }
-
-    private String getCity(String username){
-        return model.getUser(username)[Model.UsersfieldNameEnum.City.ordinal()];
     }
 
     private boolean dateCheck(LocalDate date){
