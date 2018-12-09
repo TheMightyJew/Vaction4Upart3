@@ -2,6 +2,7 @@ package Controller;
 
 import Model.Model;
 import Model.Objects.User;
+import Model.Objects.Vacation;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -66,6 +67,21 @@ public class Controller implements Initializable {
     public TextField cityUpdate;
     public TextField countryUpdate;
     public Button update;
+
+    //vacations tab
+            //publish tab
+    public TextField sourcePublish;
+    public TextField destinationPublish;
+    public TextField ticketsNumPublish;
+    public TextField pricePublish;
+    public TextField baggageLimitPublish;
+    public TextField hospitalityRankPublish;
+    public ChoiceBox<Vacation.Tickets_Type> ticketsClassPublish;
+    public ChoiceBox<Boolean> partTicketsPublish;
+    public ChoiceBox<Vacation.Vacation_Type> vacationTypePublish;
+    public ChoiceBox<Vacation.Flight_Type> flightTypePublish;
+    public ChoiceBox<Boolean> baggagePublish;
+    public ChoiceBox<Boolean> hospitalityPublish;
 
     final String directoryPath = "C:/DATABASE/";//////
     final String databaseName = "database.db";
