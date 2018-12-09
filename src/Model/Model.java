@@ -369,6 +369,7 @@ public class Model implements IModel {
         }
     }
 
+
     @Override
     public boolean UsersTable_existingUsername(User user) {
         if(UsersTable_getUserByUsername(user.getUsername()) == null)

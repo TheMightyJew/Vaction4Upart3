@@ -16,6 +16,7 @@ public interface IModel {
     boolean UsersTable_existingUsername(User user);
     //update top functions to this functions:
     boolean UsersTable_createUser(User user);
+
     boolean UsersTable_updateUserInfoByUsername(String username,User user);
     //new functions:
 
