@@ -10,13 +10,13 @@ import java.util.List;
 public interface IModel {
     //Users Actions
     void UsersTable_createUser(String Username_val,String Password_val,String Birthday_val, String FirstName_val,String LastName_val,String City_val);
-    String[] UsersTable_getUserByUsername(String Username_val);
+    User UsersTable_getUserByUsername(String Username_val);
     void UsersTable_updateUserInfoByUsername(String Username_key, String Username_val,String Password_val,String Birthday_val, String FirstName_val,String LastName_val,String City_val);
-    void UsersTable_deleteUserByUsername(String Username_val);
-    boolean UsersTable_existingUsername(String username);
+    boolean UsersTable_deleteUserByUsername(User user);
+    boolean UsersTable_existingUsername(User user);
     //update top functions to this functions:
-    void UsersTable_createUser(User user);
-    void UsersTable_updateUserInfoByUsername(String username,User user);
+    boolean UsersTable_createUser(User user);
+    boolean UsersTable_updateUserInfoByUsername(String username,User user);
     //new functions:
 
     /**
@@ -58,13 +58,13 @@ public interface IModel {
      *
      * @param requestId
      */
-    void acceptRequest(int requestId);
+    boolean acceptRequest(int requestId);
 
     /**
      *
      * @param requestId
      */
-    void rejectRequest(int requestId);
+    boolean rejectRequest(int requestId);
 
     /**
      *

@@ -59,7 +59,7 @@ public class Model implements IModel {
                     + "	Birthday text NOT NULL,\n"
                     + "	FirstName text NOT NULL,\n"
                     + "	LastName text NOT NULL,\n"
-                    + "	City text NOT NULL\n"
+                    + "	City text NOT NULL,\n"
                     + "	State text NOT NULL\n"
                     + ");";
             stmt.executeUpdate(sql);
@@ -341,12 +341,15 @@ public class Model implements IModel {
     }
 
     @Override
-    public String[] UsersTable_getUserByUsername(String Username_val) {
+    public User UsersTable_getUserByUsername(String Username_val) {
+        String[] ans;
         List<String[]> result = selectQuery("Users_Table",UsersfieldNameEnum.Username + " = '" + Username_val+"'");
         if(result.size() != 1)
             return null;
-        else
-            return result.get(0);
+        else{
+            ans = result.get(0);
+            return new User(ans[0],ans[1],new Date(ans[2]),ans[3],ans[4],ans[5],ans[6]);
+        }
     }
 
     @Override
@@ -356,13 +359,19 @@ public class Model implements IModel {
     }
 
     @Override
-    public void UsersTable_deleteUserByUsername(String Username_key) {
-        deleteQuery(tableNameEnum.Users_table.toString(),UsersfieldNameEnum.Username + " = '" + Username_key + "'");
+    public boolean UsersTable_deleteUserByUsername(User user) {
+        try{
+            deleteQuery(tableNameEnum.Users_table.toString(),UsersfieldNameEnum.Username + " = '" + user.getUsername() + "'");
+            return  true;
+        }
+        catch (Exception e){
+            return false;
+        }
     }
 
     @Override
-    public boolean UsersTable_existingUsername(String username) {
-        if(UsersTable_getUserByUsername(username) == null)
+    public boolean UsersTable_existingUsername(User user) {
+        if(UsersTable_getUserByUsername(user.getUsername()) == null)
             return false;
         else
             return true;
@@ -381,13 +390,29 @@ public class Model implements IModel {
     //todo all function below
 
     @Override
-    public void UsersTable_createUser(User user) {
-
+    public boolean UsersTable_createUser(User user) {
+        try {
+            String user_birth_date = user.getBirth_Date().toString();
+            String[] values = {user.getUsername(), user.getPassword(), user_birth_date, user.getFirst_Name(), user.getLast_Name(), user.getCity(), user.getCountry()};
+            insertQuery("Users_Table", UsersfieldNameEnum.class, values);
+            return true;
+        }
+        catch (Exception e){
+            return false;
+        }
     }
 
     @Override
-    public void UsersTable_updateUserInfoByUsername(String username, User user) {
-
+    public boolean UsersTable_updateUserInfoByUsername(String username, User user) {
+        try {
+            String Birthday_val = user.getBirth_Date().toString();
+            String [] values = {user.getUsername(),user.getPassword(),Birthday_val,user.getFirst_Name(),user.getLast_Name(),user.getCity(),user.getCountry()};
+            updateQuery(tableNameEnum.Users_table.toString(),UsersfieldNameEnum.class,values,UsersfieldNameEnum.Username.toString() + " = '" + username+"'");
+            return true;
+        }
+        catch (Exception e){
+            return  false;
+        }
     }
 
     @Override
@@ -416,13 +441,13 @@ public class Model implements IModel {
     }
 
     @Override
-    public void acceptRequest(int requestId) {
-
+    public boolean acceptRequest(int requestId) {
+        return false;
     }
 
     @Override
-    public void rejectRequest(int requestId) {
-
+    public boolean rejectRequest(int requestId) {
+        return false;
     }
 
     @Override
