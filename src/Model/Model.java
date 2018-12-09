@@ -30,7 +30,7 @@ public class Model implements IModel {
     // private functions (generics)
     private void createNewDatabase() {
 
-        String url = "jdbc:sqlite:resources/" /*Configuration.loadProperty("directoryPath")*/ + databaseName;
+        String url = "jdbc:sqlite:" +Configuration.loadProperty("directoryPath") + databaseName;
 
         try (Connection conn = DriverManager.getConnection(url)) {
             conn.close();
@@ -392,7 +392,7 @@ public class Model implements IModel {
     @Override
     public boolean updateUserInfo(String username, User user) {
         try {
-            String Birthday_val =user.getBirth_Date().getMonth()+"/"+user.getBirth_Date().getDay()+"/"+user.getBirth_Date().getYear();
+            String Birthday_val = user.getBirth_Date().toString();
             String [] values = {user.getUsername(),user.getPassword(),Birthday_val,user.getFirst_Name(),user.getLast_Name(),user.getCity(),user.getCountry()};
             updateQuery(tableNameEnum.Users_table.toString(),UsersfieldNameEnum.class,values,UsersfieldNameEnum.Username.toString() + " = '" + username+"'");
             return true;

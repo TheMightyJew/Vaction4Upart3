@@ -9,19 +9,18 @@ import java.util.List;
 
 public interface IModel {
     //Users Actions
-    void createUser(String Username_val, String Password_val, String Birthday_val, String FirstName_val, String LastName_val, String City_val,String State_val);
+    void createUser(String Username_val, String Password_val, String Birthday_val, String FirstName_val, String LastName_val, String City_val);
 
-    User getUser(String Username_val);
+    //String[] getUser(String Username_val);
 
-    void updateUserInfo(String Username_key, String Username_val, String Password_val, String Birthday_val, String FirstName_val, String LastName_val, String City_val,String State_val);
-
-    boolean deleteUser(User user);
+    //void updateUserInfo(String Username_key, String Username_val, String Password_val, String Birthday_val, String FirstName_val, String LastName_val, String City_val);
+    boolean deleteUser(String Username_val);
 
     boolean userExist(String username);
 
     //update top functions to this functions:
     boolean createUser(User user);
-
+    User getUser(String Username_val);
     boolean updateUserInfo(String username, User user);
     //new functions:
 
