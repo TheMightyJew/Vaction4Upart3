@@ -13,7 +13,7 @@ public class Model implements IModel {
     //attributes
     private String databaseName;
     //Enums...
-    public enum UsersfieldNameEnum {Username,Password,Birthday,FirstName,LastName,City;}
+    public enum UsersfieldNameEnum {Username,Password,Birthday,FirstName,LastName,City,State;}
     public enum VacationsfieldNameEnum {Vacation_id,Publisher_Username,Num_Of_Passengers,Vacation_Type,Lodging_Included,Lodging_Rating;}
     public enum PurchaseRequestsfieldNameEnum {PurchaseRequest_id,Requester_Username,Vacation_id,Request_Status;}
     public enum FlightsToVacationsfieldNameEnum {Vacation_id,Flight_id,Tickets_type,baggage;}
@@ -335,8 +335,8 @@ public class Model implements IModel {
 
     // Users_Table
     @Override
-    public void createUser(String Username_val, String Password_val, String Birthday_val, String FirstName_val, String LastName_val, String City_val) {
-        String [] values = {Username_val,Password_val,Birthday_val,FirstName_val,LastName_val,City_val};
+    public void createUser(String Username_val, String Password_val, String Birthday_val, String FirstName_val, String LastName_val, String City_val,String State_val) {
+        String [] values = {Username_val,Password_val,Birthday_val,FirstName_val,LastName_val,City_val,State_val};
         insertQuery("Users_Table",UsersfieldNameEnum.class,values);
     }
 
@@ -350,8 +350,8 @@ public class Model implements IModel {
     }
 
     @Override
-    public void updateUserInfo(String Username_key, String Username_val, String Password_val, String Birthday_val, String FirstName_val, String LastName_val, String City_val) {
-        String [] values = {Username_val,Password_val,Birthday_val,FirstName_val,LastName_val,City_val};
+    public void updateUserInfo(String Username_key, String Username_val, String Password_val, String Birthday_val, String FirstName_val, String LastName_val, String City_val,String State_val) {
+        String [] values = {Username_val,Password_val,Birthday_val,FirstName_val,LastName_val,City_val,State_val};
         updateQuery(tableNameEnum.Users_table.toString(),UsersfieldNameEnum.class,values,UsersfieldNameEnum.Username.toString() + " = '" + Username_key+"'");
     }
 
