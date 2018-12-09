@@ -1,9 +1,12 @@
 package Model;
 
 
+import Model.Objects.*;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 public class Model implements IModel {
@@ -365,6 +368,7 @@ public class Model implements IModel {
             return true;
     }
 
+
     public boolean UsersTable_checkPassword(String Username_val,String Password_val) {
         List<String[]> result = selectQuery("Users_Table",UsersfieldNameEnum.Username + " = '" + Username_val+"'");
         if(result.size() != 1)
@@ -373,6 +377,59 @@ public class Model implements IModel {
             return false;
         return true;
     }
+
+    //todo all function below
+
+    @Override
+    public void UsersTable_createUser(User user) {
+
+    }
+
+    @Override
+    public void UsersTable_updateUserInfoByUsername(String username, User user) {
+
+    }
+
+    @Override
+    public boolean publishVacation(Vacation vacation) {
+        return false;
+    }
+
+    @Override
+    public boolean sendRequest(Request request) {
+        return false;
+    }
+
+    @Override
+    public List<PurchaseRequest> getMyRequests(String username) {
+        return null;
+    }
+
+    @Override
+    public boolean payForVacation(int requestId, Payment payment) {
+        return false;
+    }
+
+    @Override
+    public List<PurchaseRequest> getReceivedRequests(String username) {
+        return null;
+    }
+
+    @Override
+    public void acceptRequest(int requestId) {
+
+    }
+
+    @Override
+    public void rejectRequest(int requestId) {
+
+    }
+
+    @Override
+    public List<VacationSell> getVacations(String flightCompany, Date fromDate, Date toDate, boolean baggage, int baggageMin, int ticketsNum, Vacation.Tickets_Type tickets_type, int maxPricePerTicket, String sourceCountry, String destCountry, Vacation.Vacation_Type vacation_type, boolean hospitalityIncluded, int minHospitalityRank) {
+        return null;
+    }
+
 
 
 }
