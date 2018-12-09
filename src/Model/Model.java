@@ -15,7 +15,7 @@ public class Model implements IModel {
     //Enums...
     public enum UsersfieldNameEnum {Username,Password,Birthday,FirstName,LastName,City,State;}
     public enum VacationsfieldNameEnum {Vacation_id,Publisher_Username,Num_Of_Passengers,Vacation_Type,Lodging_Included,Lodging_Rating;}
-    public enum PurchaseRequestsfieldNameEnum {PurchaseRequest_id,Requester_Username,Vacation_id,Request_Status;}
+    public enum PurchaseRequestsfieldNameEnum {Requester_Username,Vacation_id,Request_Status;}
     public enum FlightsToVacationsfieldNameEnum {Vacation_id,Flight_id,Tickets_type,baggage;}
     public enum PurchasesfieldNameEnum {Username,VacationID,PaymentCompany,CardNumber,CVV,ValidDate,UserID,FirstName,LastName;}
     public enum FlightsfieldNameEnum {FlightID,OriginAirport,DestinationAirport,DepartureDate,DepartureTime,ArrivalDate,ArrivalTime,FlightComapny;}
@@ -163,11 +163,10 @@ public class Model implements IModel {
             c = DriverManager.getConnection("jdbc:sqlite:"+ Configuration.loadProperty("directoryPath") + databaseName);
             stmt = c.createStatement();
             String sql = "CREATE TABLE IF NOT EXISTS PurchaseRequests_Table (\n"
-                    + "PurchaseRequest_id BIGINT AUTO_INCREMENT,\n"
+                    + "PurchaseRequest_id INTEGER PRIMARY KEY AUTOINCREMENT,\n"
                     + "Requester_Username text NOT NULL,\n"
                     + "Vacation_id text NOT NULL,\n"
-                    + "Request_Status text NOT NULL,\n"
-                    + "	PRIMARY KEY (PurchaseRequest_id)\n"
+                    + "Request_Status text NOT NULL\n"
                     + ");";
             stmt.executeUpdate(sql);
             stmt.close();
@@ -393,7 +392,7 @@ public class Model implements IModel {
     @Override
     public boolean updateUserInfo(String username, User user) {
         try {
-            String Birthday_val = user.getBirth_Date().toString();
+            String Birthday_val =user.getBirth_Date().getMonth()+"/"+user.getBirth_Date().getDay()+"/"+user.getBirth_Date().getYear();
             String [] values = {user.getUsername(),user.getPassword(),Birthday_val,user.getFirst_Name(),user.getLast_Name(),user.getCity(),user.getCountry()};
             updateQuery(tableNameEnum.Users_table.toString(),UsersfieldNameEnum.class,values,UsersfieldNameEnum.Username.toString() + " = '" + username+"'");
             return true;
@@ -415,11 +414,25 @@ public class Model implements IModel {
 
     @Override
     public boolean sendRequest(Request request) {
-        return false;
+        try{
+            String[] values = {request.getUsername(),""+request.getVacationId(),"pending"};
+            insertQuery(tableNameEnum.PurchaseRequests_Table.toString(), PurchaseRequestsfieldNameEnum.class, values);
+            return true;
+        }
+        catch (Exception e){
+            return false;
+        }
     }
 
     @Override
     public List<PurchaseRequest> getMyRequests(String username) {
+//        List<PurchaseRequest> ans = new ArrayList<>();
+//        List<String[]>ans_in_Strings = selectQuery(tableNameEnum.PurchaseRequests_Table.toString(),PurchaseRequestsfieldNameEnum.Requester_Username.toString()+"='"+username+"'");
+//        for (String[] record:
+//             ans_in_Strings) {
+//            Request tmp_request = new Request(record[0],Integer.parseInt(record[1]),record[2]);
+//            ans.add(tmp_request);
+//        }
         return null;
     }
 
@@ -457,6 +470,8 @@ public class Model implements IModel {
 
     public static void main(String[] args) {
         Model model=new Model("Vaction4U");
+        Request rq = new Request("oded",8);
+        model.sendRequest(rq);
 
 
 

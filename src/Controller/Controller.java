@@ -1,6 +1,7 @@
 package Controller;
 
 import Model.Model;
+import Model.Objects.User;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -204,7 +205,7 @@ public class Controller implements Initializable {
             error("Age must be at least 18");
         }
         else if(confirm("Are you sure you want to Create an account with these details?")){
-            model.createUser(usernameCreate.getText(),passwordCreate.getText(),DatePicker2Str(birthCreate),firstCreate.getText(),lastCreate.getText(),cityCreate.getText());
+            //model.createUser(usernameCreate.getText(),passwordCreate.getText(),DatePicker2Str(birthCreate),firstCreate.getText(),lastCreate.getText(),cityCreate.getText());
             info("User creation was made successfully!");
             event.consume();
             return true;
@@ -262,8 +263,8 @@ public class Controller implements Initializable {
     }
 
     private LocalDate parseBirthday(String username) {
-        String[] details=getBirthday(username).split("/");
-        return LocalDate.of(Integer.parseInt(details[2]),Integer.parseInt(details[1]),Integer.parseInt(details[0]));
+        java.util.Date details=getBirthday(username);
+        return LocalDate.of(details.getDay(),details.getMonth(),details.getYear());
     }
 
 
@@ -276,7 +277,7 @@ public class Controller implements Initializable {
     public void delete(ActionEvent event){
         if(confirm("Are you sure you want to delete your account?")){
             info("Your account was deleted successfully!");
-            model.deleteUser(username);
+            //model.deleteUser(username);
             tabSignOut();
         }
         event.consume();
@@ -286,7 +287,7 @@ public class Controller implements Initializable {
         if(model.userExist(usernameRead.getText())==true){
             firstRead.setText(getFirstName(username));
             lastRead.setText(getLastName(username));
-            birthRead.setText(getBirthday(username));
+            birthRead.setText(getBirthday(username).toString());
             cityRead.setText(getCity(username));
         }
         else {
@@ -312,7 +313,7 @@ public class Controller implements Initializable {
             event.consume();
         }
         else if(confirm("Are you sure you want to update the details?")){
-            model.updateUserInfo(username,usernameUpdate.getText(),passwordUpdate.getText(),DatePicker2Str(birthUpdate),firstUpdate.getText(),lastUpdate.getText(),cityUpdate.getText());
+            //model.updateUserInfo(username,usernameUpdate.getText(),passwordUpdate.getText(),DatePicker2Str(birthUpdate),firstUpdate.getText(),lastUpdate.getText(),cityUpdate.getText());
             if(usernameRead.getText().equals(this.username)==true){
                 clearRead();
             }
@@ -327,7 +328,7 @@ public class Controller implements Initializable {
         usernameHome.setText(username);
         firstHome.setText(getFirstName(username));
         lastHome.setText(getLastName(username));
-        birthHome.setText(getBirthday(username));
+        birthHome.setText(getBirthday(username).toString());
         cityHome.setText(getCity(username));
     }
 
@@ -350,28 +351,28 @@ public class Controller implements Initializable {
         Optional<ButtonType> result = alert.showAndWait();
     }
 
-    private String[] getDetails(String username){
+    private User getDetails(String username){
         return model.getUser(username);
     }
 
     private String getPassword(String username){
-        return model.getUser(username)[Model.UsersfieldNameEnum.Password.ordinal()];
+        return model.getUser(username).getPassword();
     }
 
-    private String getBirthday(String username){
-        return model.getUser(username)[Model.UsersfieldNameEnum.Birthday.ordinal()];
+    private java.util.Date getBirthday(String username){
+        return model.getUser(username).getBirth_Date();
     }
 
     private String getFirstName(String username){
-        return model.getUser(username)[Model.UsersfieldNameEnum.FirstName.ordinal()];
+        return model.getUser(username).getFirst_Name();
     }
 
     private String getLastName(String username){
-        return model.getUser(username)[Model.UsersfieldNameEnum.LastName.ordinal()];
+        return model.getUser(username).getLast_Name();
     }
 
     private String getCity(String username){
-        return model.getUser(username)[Model.UsersfieldNameEnum.City.ordinal()];
+        return model.getUser(username).getCity();
     }
 
     private boolean dateCheck(LocalDate date){
