@@ -356,8 +356,14 @@ public class Model implements IModel {
     }
 
     @Override
-    public void deleteUser(String Username_key) {
-        deleteQuery(tableNameEnum.Users_table.toString(),UsersfieldNameEnum.Username + " = '" + Username_key + "'");
+    public boolean deleteUser(User user) {
+        try{
+            deleteQuery(tableNameEnum.Users_table.toString(),UsersfieldNameEnum.Username + " = '" + user.getUsername() + "'");
+            return  true;
+        }
+        catch (Exception e){
+            return false;
+        }
     }
 
     @Override
@@ -367,32 +373,41 @@ public class Model implements IModel {
         else
             return true;
     }
-
-
-    public boolean UsersTable_checkPassword(String Username_val,String Password_val) {
-        List<String[]> result = selectQuery("Users_Table",UsersfieldNameEnum.Username + " = '" + Username_val+"'");
-        if(result.size() != 1)
-            return false;
-        else if(result.get(0)[1].equals(Password_val)==false)
-            return false;
-        return true;
-    }
-
-    //todo all function below
-
+    //TODO: Functions.
     @Override
-    public void UsersTable_createUser(User user) {
-
+    public boolean createUser(User user) {
+        try {
+            String user_birth_date = user.getBirth_Date().toString();
+            String[] values = {user.getUsername(), user.getPassword(), user_birth_date, user.getFirst_Name(), user.getLast_Name(), user.getCity(), user.getCountry()};
+            insertQuery("Users_Table", UsersfieldNameEnum.class, values);
+            return true;
+        }
+        catch (Exception e){
+            return false;
+        }
     }
 
     @Override
-    public void UsersTable_updateUserInfoByUsername(String username, User user) {
-
+    public boolean updateUserInfo(String username, User user) {
+        try {
+            String Birthday_val = user.getBirth_Date().toString();
+            String [] values = {user.getUsername(),user.getPassword(),Birthday_val,user.getFirst_Name(),user.getLast_Name(),user.getCity(),user.getCountry()};
+            updateQuery(tableNameEnum.Users_table.toString(),UsersfieldNameEnum.class,values,UsersfieldNameEnum.Username.toString() + " = '" + username+"'");
+            return true;
+        }
+        catch (Exception e){
+            return  false;
+        }
     }
 
     @Override
     public boolean publishVacation(Vacation vacation) {
         return false;
+    }
+
+    @Override
+    public List<VacationSell> getVacations(String flightCompany, Date fromDate, Date toDate, boolean baggage, Integer baggageMin, Integer ticketsNum, Vacation.Tickets_Type tickets_type, Integer maxPricePerTicket, String sourceCountry, String destCountry, Vacation.Vacation_Type vacation_type, boolean hospitalityIncluded, Integer minHospitalityRank) {
+        return null;
     }
 
     @Override
@@ -403,11 +418,6 @@ public class Model implements IModel {
     @Override
     public List<PurchaseRequest> getMyRequests(String username) {
         return null;
-    }
-
-    @Override
-    public boolean payForVacation(int requestId, Payment payment) {
-        return false;
     }
 
     @Override
@@ -426,10 +436,21 @@ public class Model implements IModel {
     }
 
     @Override
-    public List<VacationSell> getVacations(String flightCompany, Date fromDate, Date toDate, boolean baggage, int baggageMin, int ticketsNum, Vacation.Tickets_Type tickets_type, int maxPricePerTicket, String sourceCountry, String destCountry, Vacation.Vacation_Type vacation_type, boolean hospitalityIncluded, int minHospitalityRank) {
-        return null;
+    public boolean payForVacation(int requestId, Payment payment) {
+        return false;
     }
 
+
+    public boolean UsersTable_checkPassword(String Username_val,String Password_val) {
+        List<String[]> result = selectQuery("Users_Table",UsersfieldNameEnum.Username + " = '" + Username_val+"'");
+        if(result.size() != 1)
+            return false;
+        else if(result.get(0)[1].equals(Password_val)==false)
+            return false;
+        return true;
+    }
+
+    //todo all function below
 
 
 }

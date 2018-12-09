@@ -15,14 +15,14 @@ public interface IModel {
 
     void updateUserInfo(String Username_key, String Username_val, String Password_val, String Birthday_val, String FirstName_val, String LastName_val, String City_val);
 
-    void deleteUser(String Username_val);
+    boolean deleteUser(User user);
 
     boolean userExist(String username);
 
     //update top functions to this functions:
-    void createUser(User user);
+    boolean createUser(User user);
 
-    void updateUserInfo(String username, User user);
+    boolean updateUserInfo(String username, User user);
     //new functions:
 
     /**
