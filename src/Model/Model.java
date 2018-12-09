@@ -59,7 +59,7 @@ public class Model implements IModel {
                     + "	Birthday text NOT NULL,\n"
                     + "	FirstName text NOT NULL,\n"
                     + "	LastName text NOT NULL,\n"
-                    + "	City text NOT NULL,\n"
+                    + "	City text NOT NULL\n"
                     + "	State text NOT NULL\n"
                     + ");";
             stmt.executeUpdate(sql);
@@ -335,44 +335,34 @@ public class Model implements IModel {
 
     // Users_Table
     @Override
-    public void UsersTable_createUser(String Username_val, String Password_val, String Birthday_val, String FirstName_val, String LastName_val, String City_val) {
+    public void createUser(String Username_val, String Password_val, String Birthday_val, String FirstName_val, String LastName_val, String City_val) {
         String [] values = {Username_val,Password_val,Birthday_val,FirstName_val,LastName_val,City_val};
         insertQuery("Users_Table",UsersfieldNameEnum.class,values);
     }
 
     @Override
-    public User UsersTable_getUserByUsername(String Username_val) {
-        String[] ans;
+    public String[] getUser(String Username_val) {
         List<String[]> result = selectQuery("Users_Table",UsersfieldNameEnum.Username + " = '" + Username_val+"'");
         if(result.size() != 1)
             return null;
-        else{
-            ans = result.get(0);
-            return new User(ans[0],ans[1],new Date(ans[2]),ans[3],ans[4],ans[5],ans[6]);
-        }
+        else
+            return result.get(0);
     }
 
     @Override
-    public void UsersTable_updateUserInfoByUsername(String Username_key, String Username_val, String Password_val, String Birthday_val, String FirstName_val, String LastName_val, String City_val) {
+    public void updateUserInfo(String Username_key, String Username_val, String Password_val, String Birthday_val, String FirstName_val, String LastName_val, String City_val) {
         String [] values = {Username_val,Password_val,Birthday_val,FirstName_val,LastName_val,City_val};
         updateQuery(tableNameEnum.Users_table.toString(),UsersfieldNameEnum.class,values,UsersfieldNameEnum.Username.toString() + " = '" + Username_key+"'");
     }
 
     @Override
-    public boolean UsersTable_deleteUserByUsername(User user) {
-        try{
-            deleteQuery(tableNameEnum.Users_table.toString(),UsersfieldNameEnum.Username + " = '" + user.getUsername() + "'");
-            return  true;
-        }
-        catch (Exception e){
-            return false;
-        }
+    public void deleteUser(String Username_key) {
+        deleteQuery(tableNameEnum.Users_table.toString(),UsersfieldNameEnum.Username + " = '" + Username_key + "'");
     }
 
-
     @Override
-    public boolean UsersTable_existingUsername(User user) {
-        if(UsersTable_getUserByUsername(user.getUsername()) == null)
+    public boolean userExist(String username) {
+        if(getUser(username) == null)
             return false;
         else
             return true;
@@ -391,29 +381,13 @@ public class Model implements IModel {
     //todo all function below
 
     @Override
-    public boolean UsersTable_createUser(User user) {
-        try {
-            String user_birth_date = user.getBirth_Date().toString();
-            String[] values = {user.getUsername(), user.getPassword(), user_birth_date, user.getFirst_Name(), user.getLast_Name(), user.getCity(), user.getCountry()};
-            insertQuery("Users_Table", UsersfieldNameEnum.class, values);
-            return true;
-        }
-        catch (Exception e){
-            return false;
-        }
+    public void UsersTable_createUser(User user) {
+
     }
 
     @Override
-    public boolean UsersTable_updateUserInfoByUsername(String username, User user) {
-        try {
-            String Birthday_val = user.getBirth_Date().toString();
-            String [] values = {user.getUsername(),user.getPassword(),Birthday_val,user.getFirst_Name(),user.getLast_Name(),user.getCity(),user.getCountry()};
-            updateQuery(tableNameEnum.Users_table.toString(),UsersfieldNameEnum.class,values,UsersfieldNameEnum.Username.toString() + " = '" + username+"'");
-            return true;
-        }
-        catch (Exception e){
-            return  false;
-        }
+    public void UsersTable_updateUserInfoByUsername(String username, User user) {
+
     }
 
     @Override
@@ -442,13 +416,13 @@ public class Model implements IModel {
     }
 
     @Override
-    public boolean acceptRequest(int requestId) {
-        return false;
+    public void acceptRequest(int requestId) {
+
     }
 
     @Override
-    public boolean rejectRequest(int requestId) {
-        return false;
+    public void rejectRequest(int requestId) {
+
     }
 
     @Override
