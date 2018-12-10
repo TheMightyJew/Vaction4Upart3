@@ -26,6 +26,7 @@ public class ViewController implements Initializable,Observer {
 
     //tabs
     public TabPane tabPane;
+    public TabPane vacationTabPane;
     public Tab signTab;
     public Tab homeTab;
     public Tab createTab;
@@ -153,7 +154,7 @@ public class ViewController implements Initializable,Observer {
         tabPane.getTabs().remove(0,tabPane.getTabs().size());
         tabPane.getTabs().add(signTab);
         tabPane.getTabs().add(createTab);
-        vacationsTab.getTabPane().getTabs().remove(publishTab);
+        vacationTabPane.getTabs().removeAll(publishTab);
         tabPane.getTabs().add(vacationsTab);
         createTab.setText("Sign up");
         create.setText("Sign up!");
@@ -167,12 +168,13 @@ public class ViewController implements Initializable,Observer {
 
     public void tabSignIn(){
         clearAll();
-        tabPane.getTabs().remove(0,2);
+        tabPane.getTabs().remove(0,3);
         tabPane.getTabs().add(homeTab);
 //        tabPane.getTabs().add(createTab);
         tabPane.getTabs().add(readTab);
         tabPane.getTabs().add(updateTab);
-        vacationsTab.getTabPane().getTabs().add(publishTab);
+        tabPane.getTabs().add(vacationsTab);
+        vacationTabPane.getTabs().add(publishTab);
 //        createTab.setText("Create");
 //        create.setText("Create!");
 //        create.setOnAction(this::create);

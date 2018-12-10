@@ -18,7 +18,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<TabPane fx:id="tabPane" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.ViewController">
+<TabPane fx:id="tabPane" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.ViewController">
    <tabs>
       <Tab fx:id="signTab" text="Sign in">
          <content>
@@ -235,7 +235,7 @@
                <children>
                   <VBox>
                      <children>
-                        <TabPane prefHeight="355.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE">
+                        <TabPane fx:id="vacationTabPane" prefHeight="355.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE">
                           <tabs>
                             <Tab fx:id="searchTab" text="Search" />
                             <Tab fx:id="publishTab" text="Publish">
@@ -313,7 +313,7 @@
                                                       <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="8">
                                                          <children>
                                                             <Label prefHeight="21.0" prefWidth="184.0" text="Hospitality rank:" />
-                                                            <TextField fx:id="hospitalityRankPublish" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="31.0" prefWidth="349.0" />
+                                                            <TextField fx:id="hospitalityRankPublish" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="31.0" prefWidth="349.0" />
                                                          </children>
                                                       </HBox>
                                                       <ChoiceBox fx:id="ticketsClassPublish" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="31.0" prefWidth="137.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
