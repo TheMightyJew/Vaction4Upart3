@@ -3,14 +3,18 @@ package Controller;
 import Model.Objects.Flight;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 
 import java.util.*;
 
-public class flightsListController extends Observable implements Observer {
+public class FlightsListController extends Observable implements Observer {
 
     private ArrayList<Flight> flights=new ArrayList<>();
     @Override
@@ -23,7 +27,22 @@ public class flightsListController extends Observable implements Observer {
     }
 
     public void addFlight(Event event){
-
+        try{
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("addFlight.fxml"));
+            AddFlightController viewController =fxmlLoader.getController();
+            viewController.addObserver(this);
+            Parent root1 = (Parent) fxmlLoader.load();
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initStyle(StageStyle.UNDECORATED);
+            stage.setTitle("Add flight");
+            stage.setScene(new Scene(root1,600,400));
+            stage.initModality(Modality.APPLICATION_MODAL); //Lock the window until it closes
+            stage.show();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     public void reset(Event event){
