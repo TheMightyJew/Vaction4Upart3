@@ -9,12 +9,12 @@ import java.util.List;
 
 public interface IModel {
     //Users Actions
-    void createUser(String Username_val, String Password_val, String Birthday_val, String FirstName_val, String LastName_val, String City_val);
+    void createUser(String Username_val, String Password_val, String Birthday_val, String FirstName_val, String LastName_val, String City_val,String State);
 
     //String[] getUser(String Username_val);
 
-    //void updateUserInfo(String Username_key, String Username_val, String Password_val, String Birthday_val, String FirstName_val, String LastName_val, String City_val);
-    boolean deleteUser(String Username_val);
+    void updateUserInfo(String Username_key, String Username_val, String Password_val, String Birthday_val, String FirstName_val, String LastName_val, String City_val,String State);
+    boolean deleteUser(User user);
 
     boolean userExist(String username);
 
