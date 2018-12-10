@@ -1,15 +1,23 @@
 package Model.Objects;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class VisaPayment extends Payment {
     private int cardNumber;
     private int threeNumbers;
-    private Date date;
+    private LocalDate date;
     private String ownerId;
     private String ownerFirstName;
     private String ownerLastName;
 
+    public VisaPayment(int cardNumber, int threeNumbers, LocalDate date, String ownerId, String ownerFirstName, String ownerLastName) {
+        this.cardNumber = cardNumber;
+        this.threeNumbers = threeNumbers;
+        this.date = date;
+        this.ownerId = ownerId;
+        this.ownerFirstName = ownerFirstName;
+        this.ownerLastName = ownerLastName;
+    }
 
     @Override
     public boolean isPaypal() {
