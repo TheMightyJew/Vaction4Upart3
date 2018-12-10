@@ -1,7 +1,7 @@
 package Model.Objects;
 
 public class PurchaseRequest {
-    public enum Request_Status{rejected,accepted,pending,Out_Of_Date};
+    public enum Request_Status{rejected,accepted,pending};
 
     private int id;
     private String username;

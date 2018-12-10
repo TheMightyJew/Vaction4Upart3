@@ -15,6 +15,7 @@ public interface IModel {
 
     void updateUserInfo(String Username_key, String Username_val, String Password_val, String Birthday_val, String FirstName_val, String LastName_val, String City_val,String State);
     boolean deleteUser(User user);
+    boolean deleteUser(String string);
 
     boolean userExist(String username);
 

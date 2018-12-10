@@ -4,10 +4,12 @@ import Model.Model;
 import Model.Objects.Flight;
 import Model.Objects.User;
 import Model.Objects.Vacation;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -20,7 +22,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-public class viewController implements Initializable,Observer {
+public class ViewController implements Initializable,Observer {
 
     //tabs
     public TabPane tabPane;
@@ -105,8 +107,12 @@ public class viewController implements Initializable,Observer {
         String pattern = "dd-MM-yyyy";
         changeDateFormat(birthCreate,pattern);
         changeDateFormat(birthUpdate,pattern);
-
         username="";
+        //publishTab
+        baggageLimitPublish.setText("0");
+        baggageLimitPublish.setDisable(true);
+        hospitalityRankPublish.setText("0");
+        hospitalityRankPublish.setDisable(true);
     }
 
     private void changeDateFormat(DatePicker dp, String pattern)
@@ -147,6 +153,8 @@ public class viewController implements Initializable,Observer {
         tabPane.getTabs().remove(0,tabPane.getTabs().size());
         tabPane.getTabs().add(signTab);
         tabPane.getTabs().add(createTab);
+        vacationsTab.getTabPane().getTabs().remove(publishTab);
+        tabPane.getTabs().add(vacationsTab);
         createTab.setText("Sign up");
         create.setText("Sign up!");
         create.setOnAction(this::signUp);
@@ -164,6 +172,7 @@ public class viewController implements Initializable,Observer {
 //        tabPane.getTabs().add(createTab);
         tabPane.getTabs().add(readTab);
         tabPane.getTabs().add(updateTab);
+        vacationsTab.getTabPane().getTabs().add(publishTab);
 //        createTab.setText("Create");
 //        create.setText("Create!");
 //        create.setOnAction(this::create);
@@ -500,7 +509,29 @@ public class viewController implements Initializable,Observer {
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.initStyle(StageStyle.UNDECORATED);
             stage.setTitle("Flight list");
-            stage.setScene(new Scene(root1,600,400));
+
+            TableView<Flight> flightsTable = new TableView<>();
+            flightsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+            TableColumn<Flight, String> flightCompany = new TableColumn<>("flightCompany");
+            TableColumn<Flight, String> sourceAirPort = new TableColumn<>("sourceAirPort");
+            TableColumn<Flight, String> destinationAirPort = new TableColumn<>("destinationAirPort");
+            TableColumn<Flight, String> departDate = new TableColumn<>("departDate");
+            TableColumn<Flight, String> landDate = new TableColumn<>("landDate");
+            TableColumn<Flight, String> departHour = new TableColumn<>("departHour");
+            TableColumn<Flight, String> landHour = new TableColumn<>("landHour");
+            flightCompany.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getFlightCompany()));
+            sourceAirPort.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getSourceAirPort()));
+            destinationAirPort.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getDestinationAirPort()));
+            departDate.setCellValueFactory(param -> new SimpleStringProperty((param).getValue().getDepartDate().toString()));
+            landDate.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getLandDate().toString()));
+            departHour.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getDepartHour()));
+            landHour.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getLandHour()));
+            flightsTable.getColumns().addAll(flightCompany, sourceAirPort, destinationAirPort, departDate, landDate, departHour, landHour);
+            Scene scene=new Scene(new Group());
+            ((Group) scene.getRoot()).getChildren().addAll(flightsTable,root1);
+            //stage.setScene(new Scene(root1,600,400));
+            stage.setScene(scene);
             stage.initModality(Modality.APPLICATION_MODAL); //Lock the window until it closes
             stage.show();
         }

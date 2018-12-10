@@ -1,6 +1,6 @@
 package View;
 
-import Controller.viewController;
+import Controller.ViewController;
 import Model.Model;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -15,7 +15,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception{
         FXMLLoader fxmlLoader = new FXMLLoader();
         Parent root = fxmlLoader.load(getClass().getResource("View.fxml").openStream());
-        viewController viewController =fxmlLoader.getController();
+        ViewController viewController =fxmlLoader.getController();
         Model model=new Model("Vaction4U");
         viewController.setModel(model);
         primaryStage.setTitle("Vaction4U");

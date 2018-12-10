@@ -169,7 +169,7 @@ public class Model implements IModel {
                     + "Baggage_Limit text NOT NULL,\n"
                     + "Lodging_Included text NOT NULL,\n"
                     + "Lodging_Rating text NOT NULL,\n"
-                    + "Vacation_Status text NOT NULL,\n"
+                    + "Vacation_Status text NOT NULL\n"
                     + ");";
             stmt.executeUpdate(sql);
             stmt.close();
@@ -465,6 +465,11 @@ public class Model implements IModel {
         catch (Exception e){
             return false;
         }
+    }
+
+    @Override
+    public boolean deleteUser(String string) {
+        return false;
     }
 
     @Override
