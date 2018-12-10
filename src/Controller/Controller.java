@@ -4,6 +4,7 @@ import Model.Model;
 import Model.Objects.User;
 import Model.Objects.Vacation;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.util.StringConverter;
@@ -26,6 +27,9 @@ public class Controller implements Initializable {
     public Tab createTab;
     public Tab readTab;
     public Tab updateTab;
+    public Tab vacationsTab;
+    public Tab searchTab;
+    public Tab publishTab;
     //Sign in tab
     public TextField usernameSign;
     public PasswordField passwordSign;
@@ -76,12 +80,14 @@ public class Controller implements Initializable {
     public TextField pricePublish;
     public TextField baggageLimitPublish;
     public TextField hospitalityRankPublish;
+    public DatePicker fromDatePublish;
+    public DatePicker toDatePublish;
     public ChoiceBox<Vacation.Tickets_Type> ticketsClassPublish;
-    public ChoiceBox<Boolean> partTicketsPublish;
+    public CheckBox partTicketsPublish;
     public ChoiceBox<Vacation.Vacation_Type> vacationTypePublish;
     public ChoiceBox<Vacation.Flight_Type> flightTypePublish;
-    public ChoiceBox<Boolean> baggagePublish;
-    public ChoiceBox<Boolean> hospitalityPublish;
+    public CheckBox hospitalityPublish;
+    public CheckBox baggagePublish;
 
     final String directoryPath = "C:/DATABASE/";//////
     final String databaseName = "database.db";
@@ -353,6 +359,26 @@ public class Controller implements Initializable {
             info("The update was made successfully!");
         }
         event.consume();
+    }
+
+    public void baggagePublishClick(Event event){
+
+    }
+
+    public void hospitalityPublishClick(Event event){
+
+    }
+
+    public void partTicketsPublishClick(Event event){
+
+    }
+
+    public void publishPublish(Event event){
+
+    }
+
+    public void flightListPublish(Event event){
+
     }
 
     private void updateHome(String username) {
