@@ -4,12 +4,10 @@ import Model.Model;
 import Model.Objects.Flight;
 import Model.Objects.User;
 import Model.Objects.Vacation;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -35,6 +33,8 @@ public class ViewController implements Initializable,Observer {
     public Tab vacationsTab;
     public Tab searchTab;
     public Tab publishTab;
+    public Tab requestTab;
+    public Tab personalTab;
     //Sign in tab
     public TextField usernameSign;
     public PasswordField passwordSign;
@@ -93,6 +93,7 @@ public class ViewController implements Initializable,Observer {
     public ChoiceBox<Vacation.Flight_Type> flightTypePublish;
     public CheckBox hospitalityPublish;
     public CheckBox baggagePublish;
+    public Button flightListBut;
 
     private final String directoryPath = "C:/DATABASE/";//////
     private final String databaseName = "database.db";
@@ -100,7 +101,7 @@ public class ViewController implements Initializable,Observer {
     private Model model;
     private String username="";
     private boolean loggedIn=false;
-    private List<Flight> flights;
+    private ArrayList<Flight> flights;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -114,6 +115,23 @@ public class ViewController implements Initializable,Observer {
         baggageLimitPublish.setDisable(true);
         hospitalityRankPublish.setText("0");
         hospitalityRankPublish.setDisable(true);
+        vacationTypePublish.getItems().addAll(Vacation.Vacation_Type.values());
+        flightTypePublish.getItems().addAll(Vacation.Flight_Type.values());
+        ticketsClassPublish.getItems().addAll(Vacation.Tickets_Type.values());
+        setTabsClosable(false);
+    }
+
+    private void setTabsClosable(boolean b) {
+        signTab.setClosable(b);
+        homeTab.setClosable(b);
+        createTab.setClosable(b);
+        readTab.setClosable(b);
+        updateTab.setClosable(b);
+        vacationsTab.setClosable(b);
+        searchTab.setClosable(b);
+        publishTab.setClosable(b);
+        requestTab.setClosable(b);
+        personalTab.setClosable(b);
     }
 
     private void changeDateFormat(DatePicker dp, String pattern)
@@ -159,25 +177,13 @@ public class ViewController implements Initializable,Observer {
         createTab.setText("Sign up");
         create.setText("Sign up!");
         create.setOnAction(this::signUp);
-        homeTab.setClosable(false);
-        createTab.setClosable(false);
-        signTab.setClosable(false);
-        readTab.setClosable(false);
-        updateTab.setClosable(false);
     }
 
     public void tabSignIn(){
         clearAll();
         tabPane.getTabs().remove(0,3);
-        tabPane.getTabs().add(homeTab);
-//        tabPane.getTabs().add(createTab);
-        tabPane.getTabs().add(readTab);
-        tabPane.getTabs().add(updateTab);
-        tabPane.getTabs().add(vacationsTab);
         vacationTabPane.getTabs().add(publishTab);
-//        createTab.setText("Create");
-//        create.setText("Create!");
-//        create.setOnAction(this::create);
+        tabPane.getTabs().addAll(personalTab,vacationsTab,requestTab);
     }
 
     public void signUp(ActionEvent event){
@@ -503,37 +509,16 @@ public class ViewController implements Initializable,Observer {
     }
     public void flightListPublish(Event event){
         try{
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("flighsList.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../View/FlightsList.fxml"));
+            Parent root1 = (Parent) fxmlLoader.load();
             FlightsListController viewController =fxmlLoader.getController();
             viewController.addObserver(this);
-            Parent root1 = (Parent) fxmlLoader.load();
+            viewController.setFlights(flights);
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.initStyle(StageStyle.UNDECORATED);
             stage.setTitle("Flight list");
-
-            TableView<Flight> flightsTable = new TableView<>();
-            flightsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-
-            TableColumn<Flight, String> flightCompany = new TableColumn<>("flightCompany");
-            TableColumn<Flight, String> sourceAirPort = new TableColumn<>("sourceAirPort");
-            TableColumn<Flight, String> destinationAirPort = new TableColumn<>("destinationAirPort");
-            TableColumn<Flight, String> departDate = new TableColumn<>("departDate");
-            TableColumn<Flight, String> landDate = new TableColumn<>("landDate");
-            TableColumn<Flight, String> departHour = new TableColumn<>("departHour");
-            TableColumn<Flight, String> landHour = new TableColumn<>("landHour");
-            flightCompany.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getFlightCompany()));
-            sourceAirPort.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getSourceAirPort()));
-            destinationAirPort.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getDestinationAirPort()));
-            departDate.setCellValueFactory(param -> new SimpleStringProperty((param).getValue().getDepartDate().toString()));
-            landDate.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getLandDate().toString()));
-            departHour.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getDepartHour()));
-            landHour.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getLandHour()));
-            flightsTable.getColumns().addAll(flightCompany, sourceAirPort, destinationAirPort, departDate, landDate, departHour, landHour);
-            Scene scene=new Scene(new Group());
-            ((Group) scene.getRoot()).getChildren().addAll(flightsTable,root1);
-            //stage.setScene(new Scene(root1,600,400));
-            stage.setScene(scene);
+            stage.setScene(new Scene(root1,1400,400));
             stage.initModality(Modality.APPLICATION_MODAL); //Lock the window until it closes
             stage.show();
         }
@@ -561,5 +546,6 @@ public class ViewController implements Initializable,Observer {
     @Override
     public void update(Observable o, Object arg) {
         flights=((ArrayList<Flight>) arg);
+        flightListBut.setText("Flights list ("+flights.size()+")");
     }
 }

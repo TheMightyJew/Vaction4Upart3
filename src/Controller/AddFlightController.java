@@ -2,16 +2,22 @@ package Controller;
 
 import Model.Objects.Flight;
 import javafx.event.ActionEvent;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
+import javafx.util.StringConverter;
 
+import java.net.URL;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Observable;
 import java.util.Optional;
+import java.util.ResourceBundle;
 
-public class AddFlightController extends Observable{
+public class AddFlightController extends Observable implements Initializable {
 
     public TextField flightCompany;
     public TextField fromAirport;
@@ -28,6 +34,7 @@ public class AddFlightController extends Observable{
 
     public void confirm(ActionEvent event){
         if(fieldsProblem()==false && Massage.confirmMassage("Are you sure you want to add this flight?")){
+            setChanged();
             notifyObservers(new Flight(flightCompany.getText(),fromAirport.getText(),toAirport.getText(),departDate.getValue(),landingDate.getValue(),departHour.getText(),landingHour.getText()));
             closeStage(event);
         }
@@ -57,15 +64,15 @@ public class AddFlightController extends Observable{
         try{
             String [] time=hour.split(":");
             if(time.length!=2)
-                return false;
+                return true;
             if(Integer.parseInt(time[0])>23 || Integer.parseInt(time[0])<0)
-                return false;
+                return true;
             if(Integer.parseInt(time[1])>59 || Integer.parseInt(time[1])<0)
-                return false;
-            return true;
+                return true;
+            return false;
         }
         catch (Exception e){
-            return false;
+            return true;
         }
     }
 
@@ -82,4 +89,38 @@ public class AddFlightController extends Observable{
             return departHours.compareTo(landingHours);
     }
 
+    private void changeDateFormat(DatePicker dp, String pattern)
+    {
+        dp.setPromptText(pattern.toLowerCase());
+
+        dp.setConverter(new StringConverter<LocalDate>() {
+            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(pattern);
+
+            @Override
+            public String toString(LocalDate date) {
+                if (date != null) {
+                    return dateFormatter.format(date);
+                } else {
+                    return "";
+                }
+            }
+
+            @Override
+            public LocalDate fromString(String string) {
+                if (string != null && !string.isEmpty()) {
+                    return LocalDate.parse(string, dateFormatter);
+                } else {
+                    return null;
+                }
+            }
+        });
+        dp.setPromptText(pattern);
+    }
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        String pattern = "dd-MM-yyyy";
+        changeDateFormat(departDate,pattern);
+        changeDateFormat(landingDate,pattern);
+    }
 }
