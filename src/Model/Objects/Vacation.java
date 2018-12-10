@@ -1,5 +1,6 @@
 package Model.Objects;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public class Vacation {
@@ -9,6 +10,8 @@ public class Vacation {
     public static enum Flight_Type{One_Way,Round_Trip};
 
     private String seller_username;
+    private LocalDate fromDate;
+    private LocalDate toDate;
     private int price_Per_Ticket;
     private int tickets_Quantity;
     private boolean canBuyLess;
