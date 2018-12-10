@@ -44,4 +44,68 @@ public class Vacation {
         this.hospitality_Included = hospitality_Included;
         this.hospitality_Rank = hospitality_Rank;
     }
+
+    public String getSeller_username() {
+        return seller_username;
+    }
+
+    public LocalDate getFromDate() {
+        return fromDate;
+    }
+
+    public LocalDate getToDate() {
+        return toDate;
+    }
+
+    public int getPrice_Per_Ticket() {
+        return price_Per_Ticket;
+    }
+
+    public int getTickets_Quantity() {
+        return tickets_Quantity;
+    }
+
+    public boolean isCanBuyLess() {
+        return canBuyLess;
+    }
+
+    public String getSourceCountry() {
+        return sourceCountry;
+    }
+
+    public String getDestinationCountry() {
+        return destinationCountry;
+    }
+
+    public boolean isBaggage() {
+        return baggage;
+    }
+
+    public int getBaggageLimit() {
+        return baggageLimit;
+    }
+
+    public Tickets_Type getTicketsType() {
+        return ticketsType;
+    }
+
+    public List<Flight> getFlights() {
+        return flights;
+    }
+
+    public Flight_Type getFlight_Type() {
+        return flight_Type;
+    }
+
+    public Vacation_Type getVacation_type() {
+        return vacation_type;
+    }
+
+    public boolean isHospitality_Included() {
+        return hospitality_Included;
+    }
+
+    public int getHospitality_Rank() {
+        return hospitality_Rank;
+    }
 }
