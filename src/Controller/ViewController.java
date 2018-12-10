@@ -4,16 +4,22 @@ import Model.Model;
 import Model.Objects.Flight;
 import Model.Objects.User;
 import Model.Objects.Vacation;
+import Model.Objects.VacationSell;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.util.Callback;
 import javafx.util.StringConverter;
 import java.net.URL;
 import java.time.LocalDate;
@@ -78,6 +84,22 @@ public class ViewController implements Initializable,Observer {
     public Button update;
 
     //vacations tab
+        //search tab
+    public GridPane gridPane_searchFilters;
+    public TextField textField_flightCompany;
+    public TextField textField_ticketsType;
+    public TextField textField_sourceCountry;
+    public TextField textField_destinationCountry;
+    public TextField textField_maxPricePerTicket;
+    public TextField textField_ticketsQuantity;
+    public TextField textField_baggage;
+    public TextField textField_hospitality;
+    public CheckBox checkBox_baggage;
+    public CheckBox checkBox_hospitality;
+    public ComboBox comboBox_flightType;
+    public ComboBox comboBox_vacationType;
+    public DatePicker datePicker_fromDate;
+    public DatePicker datePicker_toDate;
             //publish tab
     public TextField sourcePublish;
     public TextField destinationPublish;
@@ -119,6 +141,26 @@ public class ViewController implements Initializable,Observer {
         flightTypePublish.getItems().addAll(Vacation.Flight_Type.values());
         ticketsClassPublish.getItems().addAll(Vacation.Tickets_Type.values());
         setTabsClosable(false);
+        tabSearchInit();
+    }
+
+    private void tabSearchInit() {
+        textField_baggage.setDisable(true);
+        textField_hospitality.setDisable(true);
+        checkBox_baggage.selectedProperty().addListener((observable, oldValue, newValue) -> textField_baggage.setDisable(!newValue));
+        checkBox_hospitality.selectedProperty().addListener((observable, oldValue, newValue) -> textField_hospitality.setDisable(!newValue));
+        comboBox_flightType.getItems().addAll(Vacation.Flight_Type.values());
+        comboBox_vacationType.getItems().addAll(Vacation.Vacation_Type.values());
+        textFieldNumbersOnlyRestrict(textField_baggage);
+        textFieldNumbersOnlyRestrict(textField_hospitality);
+    }
+
+    private void textFieldNumbersOnlyRestrict(TextField textField) {
+        textField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                textField.setText(newValue.replaceAll("[^\\d]", ""));
+            }
+        });
     }
 
     private void setTabsClosable(boolean b) {
@@ -547,5 +589,191 @@ public class ViewController implements Initializable,Observer {
     public void update(Observable o, Object arg) {
         flights=((ArrayList<Flight>) arg);
         flightListBut.setText("Flights list ("+flights.size()+")");
+    }
+
+    public void cleanFilters(ActionEvent actionEvent) {
+        for (Node node : gridPane_searchFilters.getChildren()) {
+            if (node instanceof TextField)
+                ((TextField) node).clear();
+        }
+    }
+
+    private TableView<Flight> getFlightsTableView() {
+        TableView<Flight> flightTableView = new TableView<>();
+        flightTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+
+        TableColumn<Flight, String> flightCompany = new TableColumn<>("Flight company");
+        TableColumn<Flight, String> sourceAirPort = new TableColumn<>("Source airport");
+        TableColumn<Flight, String> destinationAirPort = new TableColumn<>("Destination airport");
+        TableColumn<Flight, String> departDate = new TableColumn<>("Depart date");
+        TableColumn<Flight, String> landDate = new TableColumn<>("Land date");
+        TableColumn<Flight, String> departHour = new TableColumn<>("Depart hour");
+        TableColumn<Flight, String> landHour = new TableColumn<>("Land hour");
+        flightCompany.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getFlightCompany()));
+        sourceAirPort.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getSourceAirPort()));
+        destinationAirPort.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getDestinationAirPort()));
+        departDate.setCellValueFactory(param -> new SimpleStringProperty((param).getValue().getDepartDate().toString()));
+        landDate.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getLandDate().toString()));
+        departHour.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getDepartHour()));
+        landHour.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getLandHour()));
+        flightTableView.getColumns().addAll(flightCompany, sourceAirPort, destinationAirPort, departDate, landDate, departHour, landHour);
+        return flightTableView;
+    }
+
+    public void searchByFilters(ActionEvent actionEvent) {
+
+        TableView<VacationSell> vacations = new TableView<>();
+        vacations.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+
+        TableColumn<VacationSell, String> seller_username = new TableColumn<>("Seller username");
+        TableColumn<VacationSell, String> sourceCountry = new TableColumn<>("Source country");
+        TableColumn<VacationSell, String> destinationCountry = new TableColumn<>("Destination country");
+        TableColumn<VacationSell, String> ticketsType = new TableColumn<>("Tickets type");
+        TableColumn<VacationSell, String> flight_Type = new TableColumn<>("Flight type");
+        TableColumn<VacationSell, Number> max_Price_Per_Ticket = new TableColumn<>("Max price per ticket");
+        TableColumn<VacationSell, Number> tickets_Quantity = new TableColumn<>("Tickets quantity");
+        TableColumn<VacationSell, String> canBuyLess = new TableColumn<>("Can buy less");
+        TableColumn<VacationSell, String> baggage_Included = new TableColumn<>("baggage included");
+        TableColumn<VacationSell, Number> baggageLimit = new TableColumn<>("Baggage limit");
+        TableColumn<VacationSell, String> hospitality_Included = new TableColumn<>("");
+        TableColumn<VacationSell, Number> hospitality_Rank = new TableColumn<>("Hospitality included");
+        TableColumn<VacationSell, String> vacation_type = new TableColumn<>("Vacation type");
+
+//        seller_username.setCellValueFactory(new PropertyValueFactory<>("seller_username"));
+//        sourceCountry.setCellValueFactory(new PropertyValueFactory<>("sourceCountry"));
+//        destinationCountry.setCellValueFactory(new PropertyValueFactory<>("destinationCountry"));
+//        ticketsType.setCellValueFactory(new PropertyValueFactory<>("ticketsType"));
+//        flight_Type.setCellValueFactory(new PropertyValueFactory<>("flight_Type"));
+//        max_Price_Per_Ticket.setCellValueFactory(new PropertyValueFactory<>("max_Price_Per_Ticket"));
+//        tickets_Quantity.setCellValueFactory(new PropertyValueFactory<>("tickets_Quantity"));
+//        canBuyLess.setCellValueFactory(new PropertyValueFactory<>("canBuyLess"));
+//        baggage_Included.setCellValueFactory(new PropertyValueFactory<>("baggage_Included"));
+//        baggageLimit.setCellValueFactory(new PropertyValueFactory<>("baggageLimit"));
+//        hospitality_Included.setCellValueFactory(new PropertyValueFactory<>("hospitality_Included"));
+//        hospitality_Rank.setCellValueFactory(new PropertyValueFactory<>("hospitality_Rank"));
+//        vacation_type.setCellValueFactory(new PropertyValueFactory<>("vacation_type"));
+
+//        seller_username.set
+        sourceCountry.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getVacation().getSourceCountry()));
+        destinationCountry.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getVacation().getDestinationCountry()));
+        ticketsType.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getVacation().getTicketsType().toString()));
+        flight_Type.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getVacation().getFlight_Type().toString()));
+        max_Price_Per_Ticket.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getVacation().getPrice_Per_Ticket()));
+        tickets_Quantity.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getVacation().getTickets_Quantity()));
+        canBuyLess.setCellValueFactory(param -> new SimpleObjectProperty<>(String.valueOf(param.getValue().getVacation().isCanBuyLess())));
+        baggage_Included.setCellValueFactory(param -> new SimpleObjectProperty<>(String.valueOf(param.getValue().getVacation().isBaggage())));
+        baggageLimit.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getVacation().getBaggageLimit()));
+        hospitality_Included.setCellValueFactory(param -> new SimpleObjectProperty<>(String.valueOf(param.getValue().getVacation().isHospitality_Included())));
+        hospitality_Rank.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getVacation().getHospitality_Rank()));
+        vacation_type.setCellValueFactory(param -> new SimpleObjectProperty<>(String.valueOf(param.getValue().getVacation().getVacation_type())));
+
+        TableColumn<VacationSell, String> seeMore_buttons = new TableColumn<>();//Button
+        TableColumn<VacationSell, String> requset_buttons = new TableColumn<>();//Button
+
+        Callback<TableColumn<VacationSell, String>, TableCell<VacationSell, String>> cellFactory
+                = //
+                new Callback<TableColumn<VacationSell, String>, TableCell<VacationSell, String>>() {
+                    @Override
+                    public TableCell<VacationSell, String> call(final TableColumn<VacationSell, String> param) {
+                        final TableCell<VacationSell, String> cell = new TableCell<VacationSell, String>() {
+
+                            final Button btn = new Button("see more");
+
+                            @Override
+                            public void updateItem(String item, boolean empty) {
+                                super.updateItem(item, empty);
+                                if (empty) {
+                                    setGraphic(null);
+                                    setText(null);
+                                } else {
+
+                                    btn.setOnAction(event -> {
+                                        VacationSell vacationSell = getTableView().getItems().get(getIndex());
+                                        Stage stage = new Stage();
+//                    stage.getIcons().add(new Image(this.getClass().getResourceAsStream("icon.png")));
+                                        stage.setAlwaysOnTop(true);
+                                        stage.setResizable(false);
+                                        stage.setTitle("vacation " + vacationSell.getId() + " flights");
+                                        stage.initModality(Modality.APPLICATION_MODAL);
+                                        ScrollPane scrollPane = new ScrollPane();
+                                        TableView<Flight> flightsTableView = getFlightsTableView();
+                                        flightsTableView.getItems().addAll(vacationSell.getVacation().getFlights());
+                                        scrollPane.setContent(flightsTableView);
+                                        flightsTableView.setPrefHeight(600);
+                                        Scene scene = new Scene(scrollPane, flightsTableView.getMinWidth(), flightsTableView.getPrefHeight());
+                                        stage.setScene(scene);
+                                        stage.show();
+                                    });
+                                    setGraphic(btn);
+                                    setText(null);
+                                }
+                            }
+                        };
+                        return cell;
+                    }
+                };
+
+        seeMore_buttons.setCellFactory(cellFactory);
+
+        Callback<TableColumn<VacationSell, String>, TableCell<VacationSell, String>> cellFactory2
+                = //
+                new Callback<TableColumn<VacationSell, String>, TableCell<VacationSell, String>>() {
+                    @Override
+                    public TableCell<VacationSell, String> call(final TableColumn<VacationSell, String> param) {
+                        final TableCell<VacationSell, String> cell = new TableCell<VacationSell, String>() {
+
+                            final Button btn = new Button("request");
+
+                            @Override
+                            public void updateItem(String item, boolean empty) {
+                                super.updateItem(item, empty);
+                                if (empty) {
+                                    setGraphic(null);
+                                    setText(null);
+                                } else {
+
+                                    btn.setOnAction(event -> {
+                                        VacationSell vacationSell = getTableView().getItems().get(getIndex());
+                                        Massage.infoMassage("sent request for: " + vacationSell);
+                                    });
+                                    setGraphic(btn);
+                                    setText(null);
+                                }
+                            }
+                        };
+                        return cell;
+                    }
+                };
+
+        requset_buttons.setCellFactory(cellFactory2);
+
+        vacations.getColumns().addAll(seller_username, sourceCountry, destinationCountry, ticketsType, flight_Type, max_Price_Per_Ticket, tickets_Quantity, canBuyLess, baggage_Included, baggageLimit, hospitality_Included, hospitality_Rank, vacation_type, seeMore_buttons, requset_buttons);
+
+        List<VacationSell> vacationSells =model.getVacations(textField_flightCompany.getText(),
+                datePicker_fromDate.getValue(),
+                datePicker_toDate.getValue(),
+                checkBox_baggage.isSelected(),
+                checkBox_baggage.isSelected() ? Integer.parseInt(textField_baggage.getText()) : null,
+                Integer.parseInt(textField_ticketsQuantity.getText()),
+                Vacation.Tickets_Type.valueOf(textField_ticketsType.getText()),
+                Integer.parseInt(textField_maxPricePerTicket.getText()),
+                textField_sourceCountry.getText(), textField_destinationCountry.getText(),
+                Vacation.Vacation_Type.valueOf(comboBox_vacationType.getSelectionModel().getSelectedItem().toString()),
+                checkBox_hospitality.isSelected(),
+                checkBox_hospitality.isSelected() ? Integer.parseInt(textField_hospitality.getText()):null);;
+        vacations.getItems().addAll(vacationSells);
+        Stage stage = new Stage();
+        stage.setAlwaysOnTop(true);
+        stage.setResizable(false);
+        stage.setTitle("Vacations");
+        stage.initModality(Modality.APPLICATION_MODAL);
+        ScrollPane scrollPane = new ScrollPane();
+        scrollPane.setContent(vacations);
+        vacations.setPrefHeight(600);
+        Scene scene = new Scene(scrollPane, vacations.getMinWidth(), vacations.getPrefHeight());
+        stage.setScene(scene);
+        stage.show();
     }
 }

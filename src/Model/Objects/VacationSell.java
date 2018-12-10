@@ -13,4 +13,16 @@ public class VacationSell {
         this.vacation = vacation;
         this.status = status;
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public Vacation getVacation() {
+        return vacation;
+    }
+
+    public Vacation_Status getStatus() {
+        return status;
+    }
 }
