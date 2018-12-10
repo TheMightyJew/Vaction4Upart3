@@ -7,4 +7,11 @@ public class PurchaseRequest {
     private String username;
     private VacationSell vacationSell;
     private Request_Status status;
+
+    public PurchaseRequest(int id, String username, VacationSell vacationSell, Request_Status status) {
+        this.id = id;
+        this.username = username;
+        this.vacationSell = vacationSell;
+        this.status = status;
+    }
 }
