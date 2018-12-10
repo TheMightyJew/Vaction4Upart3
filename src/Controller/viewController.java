@@ -1,6 +1,7 @@
 package Controller;
 
 import Model.Model;
+import Model.Objects.Flight;
 import Model.Objects.User;
 import Model.Objects.Vacation;
 import javafx.event.ActionEvent;
@@ -13,12 +14,9 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 
-public class Controller implements Initializable {
+public class viewController implements Initializable,Observer {
 
     //tabs
     public TabPane tabPane;
@@ -89,11 +87,12 @@ public class Controller implements Initializable {
     public CheckBox hospitalityPublish;
     public CheckBox baggagePublish;
 
-    final String directoryPath = "C:/DATABASE/";//////
-    final String databaseName = "database.db";
-    final String tableName = "Users_Table";
-    Model model;
-    String username="";
+    private final String directoryPath = "C:/DATABASE/";//////
+    private final String databaseName = "database.db";
+    private final String tableName = "Users_Table";
+    private Model model;
+    private String username="";
+    private List<Flight> flights;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -227,21 +226,21 @@ public class Controller implements Initializable {
 
     public boolean create(ActionEvent event) {
         if(createEmpty()==true){
-            error("Please fill all the fields");
+            Massage.errorMassage("Please fill all the fields");
         }
         else if(passwordCreate.getText().equals(confirmCreate.getText())==false){
-            error("Password must be match in both options");
+            Massage.errorMassage("Password must be match in both options");
         }
         else if(model.userExist(usernameCreate.getText())==true){
-            error("Username already taken");
+            Massage.errorMassage("Username already taken");
         }
         else if(dateCheck(birthCreate.getValue())==false){
-            error("Age must be at least 18");
+            Massage.errorMassage("Age must be at least 18");
         }
-        else if(confirm("Are you sure you want to Create an account with these details?")){
+        else if(Massage.confirmMassage("Are you sure you want to Create an account with these details?")){
             //model.createUser(usernameCreate.getText(),passwordCreate.getText(),DatePicker2Str(birthCreate),firstCreate.getText(),lastCreate.getText(),cityCreate.getText());
             model.createUser(new User(usernameCreate.getText(),passwordCreate.getText(),birthCreate.getValue(),firstCreate.getText(),lastCreate.getText(),cityCreate.getText(),countryCreate.getText()));
-            info("User creation was made successfully!");
+            Massage.infoMassage("User creation was made successfully!");
             event.consume();
             return true;
         }
@@ -268,11 +267,11 @@ public class Controller implements Initializable {
 
     private void signIn(ActionEvent event, String username, String password) {
         if(model.userExist(username)==false){
-            error("Username is incorrect");
+            Massage.errorMassage("Username is incorrect");
             event.consume();
         }
         else if(model.UsersTable_checkPassword(username,password)==false){
-            error("Username or Password are incorrect");
+            Massage.errorMassage("Username or Password are incorrect");
             event.consume();
         }
         else{
@@ -297,14 +296,14 @@ public class Controller implements Initializable {
 
 
     public void signOut(ActionEvent event){
-        if(confirm("Are you sure you want to sign-out?"))
+        if(Massage.confirmMassage("Are you sure you want to sign-out?"))
             tabSignOut();
         event.consume();
     }
 
     public void delete(ActionEvent event){
-        if(confirm("Are you sure you want to delete your account?")){
-            info("Your account was deleted successfully!");
+        if(Massage.confirmMassage("Are you sure you want to delete your account?")){
+            Massage.infoMassage("Your account was deleted successfully!");
             model.deleteUser(username);
             tabSignOut();
         }
@@ -321,7 +320,7 @@ public class Controller implements Initializable {
             countryRead.setText(user.getCountry());
         }
         else {
-            error("Username is incorrect");
+            Massage.errorMassage("Username is incorrect");
             event.consume();
         }
     }
@@ -334,29 +333,29 @@ public class Controller implements Initializable {
 
     public void update(ActionEvent event){
         if(updateEmpty()==true){
-            info("Please fill all the fields");
+            Massage.infoMassage("Please fill all the fields");
             event.consume();
         }
         else if(model.userExist(usernameUpdate.getText())==true && usernameUpdate.getText().equals(this.username)==false){
-            error("Username already taken");
+            Massage.errorMassage("Username already taken");
             event.consume();
         }
         else if(passwordUpdate.getText().equals(confirmUpdate.getText())==false){
-            error("Password must be match in both options");
+            Massage.errorMassage("Password must be match in both options");
             event.consume();
         }
         else if(dateCheck(birthUpdate.getValue())==false){
-            error("Age must be at least 18");
+            Massage.errorMassage("Age must be at least 18");
             event.consume();
         }
-        else if(confirm("Are you sure you want to update the details?")){
+        else if(Massage.confirmMassage("Are you sure you want to update the details?")){
             model.updateUserInfo(username,new User(usernameUpdate.getText(),passwordUpdate.getText(),birthUpdate.getValue(),firstUpdate.getText(),lastUpdate.getText(),cityUpdate.getText(),countryUpdate.getText()));
             if(usernameRead.getText().equals(this.username)==true){
                 clearRead();
             }
             username=usernameUpdate.getText();
             updateHome(username);
-            info("The update was made successfully!");
+            Massage.infoMassage("The update was made successfully!");
         }
         event.consume();
     }
@@ -391,28 +390,14 @@ public class Controller implements Initializable {
         countryHome.setText(user.getCountry());
     }
 
-    public boolean confirm(String massage){
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setContentText(massage);
-        Optional<ButtonType> result = alert.showAndWait();
-        return result.get() == ButtonType.OK;
-    }
-
-    public void error(String massage){
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setContentText(massage);
-        Optional<ButtonType> result = alert.showAndWait();
-    }
-
-    public void info(String massage){
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setContentText(massage);
-        Optional<ButtonType> result = alert.showAndWait();
-    }
-
     private boolean dateCheck(LocalDate date){
         LocalDate today=LocalDate.now().plusDays(1);
         LocalDate before18=today.minusYears(18);
         return (date.isBefore(before18));
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        flights=((ArrayList<Flight>) arg);
     }
 }
