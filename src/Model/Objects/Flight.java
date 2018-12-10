@@ -1,18 +1,18 @@
 package Model.Objects;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class Flight {
 
     private String flightCompany;
     private String sourceAirPort;
     private String destinationAirPort;
-    private Date departDate;
-    private Date landDate;
+    private LocalDate departDate;
+    private LocalDate landDate;
     private String departHour;
     private String landHour;
 
-    public Flight(String flightCompany, String sourceAirPort, String destinationAirPort, Date departDate, Date landDate, String departHour, String landHour) {
+    public Flight(String flightCompany, String sourceAirPort, String destinationAirPort, LocalDate departDate, LocalDate landDate, String departHour, String landHour) {
         this.flightCompany = flightCompany;
         this.sourceAirPort = sourceAirPort;
         this.destinationAirPort = destinationAirPort;
@@ -34,11 +34,11 @@ public class Flight {
         return destinationAirPort;
     }
 
-    public Date getDepartDate() {
+    public LocalDate getDepartDate() {
         return departDate;
     }
 
-    public Date getLandDate() {
+    public LocalDate getLandDate() {
         return landDate;
     }
 

@@ -6,7 +6,7 @@ public class VisaPayment extends Payment {
     private int cardNumber;
     private int threeNumbers;
     private Date date;
-    private int ownerId;
+    private String ownerId;
     private String ownerFirstName;
     private String ownerLastName;
 

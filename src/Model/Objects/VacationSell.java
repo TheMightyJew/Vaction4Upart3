@@ -7,4 +7,10 @@ public class VacationSell {
     private int id;
     private Vacation vacation;
     private Vacation_Status status;
+
+    public VacationSell(int id, Vacation vacation, Vacation_Status status) {
+        this.id = id;
+        this.vacation = vacation;
+        this.status = status;
+    }
 }
