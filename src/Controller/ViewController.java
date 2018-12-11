@@ -928,8 +928,14 @@ public class ViewController implements Initializable, Observer {
                                 } else {
 
                                     btn.setOnAction(event -> {
-                                        VacationSell vacationSell = getTableView().getItems().get(getIndex());
-                                        Massage.infoMassage("sent request for: " + vacationSell);
+                                        if (loggedIn) {
+                                            VacationSell vacationSell = getTableView().getItems().get(getIndex());
+                                            if (model.sendRequest(new Request(username, vacationSell.getId())))
+                                                Massage.infoMassage("sent request");
+                                            else
+                                                Massage.errorMassage("set failed");
+                                        }else
+                                            Massage.errorMassage("You should login to request and buy vacation");
                                     });
                                     setGraphic(btn);
                                     setText(null);
