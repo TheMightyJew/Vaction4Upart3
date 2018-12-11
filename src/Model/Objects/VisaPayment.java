@@ -33,4 +33,28 @@ public class VisaPayment extends Payment {
     public String toString() {
         return ("Visa Payment: "+cardNumber+"|"+threeNumbers+"|"+date.toString()+"|"+ownerId+"|"+ownerFirstName+" "+ownerLastName);
     }
+
+    public int getCardNumber() {
+        return cardNumber;
+    }
+
+    public int getThreeNumbers() {
+        return threeNumbers;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public String getOwnerId() {
+        return ownerId;
+    }
+
+    public String getOwnerFirstName() {
+        return ownerFirstName;
+    }
+
+    public String getOwnerLastName() {
+        return ownerLastName;
+    }
 }

@@ -19,6 +19,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
+<?import javafx.scene.control.TableView?>
 <TabPane fx:id="tabPane" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.ViewController">
    <tabs>
       <Tab fx:id="signTab" text="Sign in">
@@ -274,7 +275,7 @@
                                               <Label alignment="CENTER" prefHeight="21.0" prefWidth="240.0" text="Flight company:" GridPane.rowIndex="2" />
                                               <Label alignment="CENTER" prefHeight="21.0" prefWidth="224.0" text="Tickets type:" GridPane.rowIndex="3" />
                                               <TextField fx:id="textField_flightCompany" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                              <TextField fx:id="textField_ticketsType" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                              <ComboBox fx:id="comboBox_ticketsType" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                                               <Label alignment="CENTER" prefHeight="21.0" prefWidth="242.0" text="Source country:" />
                                           <HBox GridPane.columnIndex="1">
                                              <children>
@@ -440,19 +441,25 @@
             </AnchorPane>
         </content>
       </Tab>
-      <Tab fx:id="requestTab" text="Requests">
-        <content>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-               <children>
-                  <TabPane prefHeight="386.0" prefWidth="601.0" tabClosingPolicy="UNAVAILABLE">
-                    <tabs>
-                      <Tab text="My requests" />
-                      <Tab text="Received requests" />
-                    </tabs>
-                  </TabPane>
-               </children>
-            </AnchorPane>
-        </content>
-      </Tab>
+       <Tab fx:id="requestTab" text="Requests">
+           <content>
+               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                   <children>
+                       <TabPane prefHeight="354.0" prefWidth="601.0" tabClosingPolicy="UNAVAILABLE">
+                           <tabs>
+                               <Tab text="My requests">
+                                   <content>
+                                       <TableView fx:id="tableView_myRequests" prefHeight="200.0" prefWidth="200.0" />
+                                   </content></Tab>
+                               <Tab text="Received requests">
+                                   <content>
+                                       <TableView fx:id="tableView_receivedRequests" prefHeight="200.0" prefWidth="200.0" />
+                                   </content></Tab>
+                           </tabs>
+                       </TabPane>
+                   </children>
+               </AnchorPane>
+           </content>
+       </Tab>
    </tabs>
 </TabPane>

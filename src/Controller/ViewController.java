@@ -18,6 +18,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
+
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
@@ -932,23 +933,23 @@ public class ViewController implements Initializable, Observer {
 
         vacations.getColumns().addAll(seller_username, sourceCountry, destinationCountry, ticketsType, flight_Type, max_Price_Per_Ticket, tickets_Quantity, canBuyLess, baggage_Included, baggageLimit, hospitality_Included, hospitality_Rank, vacation_type, seeMore_buttons, requset_buttons);
 
-//        List<VacationSell> vacationSells = model.getVacations(
-//                textField_flightCompany.getText(),
-//                datePicker_fromDate.getValue(),
-//                datePicker_toDate.getValue(),
-//                checkBox_baggage.isSelected(),
-//                checkBox_baggage.isSelected() ? Integer.parseInt(textField_baggage.getText()) : null,
-//                textField_ticketsQuantity.getText().equals("") ? null : Integer.parseInt(textField_ticketsQuantity.getText()),
-//                comboBox_ticketsType.getSelectionModel().getSelectedItem() == null ? null : Vacation.Tickets_Type.valueOf(comboBox_ticketsType.getSelectionModel().getSelectedItem().toString()),
-//                textField_maxPricePerTicket.getText().equals("") ? null : Integer.parseInt(textField_maxPricePerTicket.getText()),
-//                textField_sourceCountry.getText().equals("") ? null : textField_sourceCountry.getText(),
-//                textField_destinationCountry.getText().equals("") ? null : textField_destinationCountry.getText(),
-//                comboBox_vacationType.getSelectionModel().getSelectedItem() == null ? null : Vacation.Vacation_Type.valueOf(comboBox_vacationType.getSelectionModel().getSelectedItem().toString()),
-//                checkBox_hospitality.isSelected(),
-//                checkBox_hospitality.isSelected() ? Integer.parseInt(textField_hospitality.getText()) : null);
+        List<VacationSell> vacationSells = model.getVacations(
+                textField_flightCompany.getText(),
+                datePicker_fromDate.getValue(),
+                datePicker_toDate.getValue(),
+                checkBox_baggage.isSelected(),
+                checkBox_baggage.isSelected() ? Integer.parseInt(textField_baggage.getText()) : null,
+                textField_ticketsQuantity.getText().equals("") ? null : Integer.parseInt(textField_ticketsQuantity.getText()),
+                comboBox_ticketsType.getSelectionModel().getSelectedItem() == null ? null : Vacation.Tickets_Type.valueOf(comboBox_ticketsType.getSelectionModel().getSelectedItem().toString()),
+                textField_maxPricePerTicket.getText().equals("") ? null : Integer.parseInt(textField_maxPricePerTicket.getText()),
+                textField_sourceCountry.getText().equals("") ? null : textField_sourceCountry.getText(),
+                textField_destinationCountry.getText().equals("") ? null : textField_destinationCountry.getText(),
+                comboBox_vacationType.getSelectionModel().getSelectedItem() == null ? null : Vacation.Vacation_Type.valueOf(comboBox_vacationType.getSelectionModel().getSelectedItem().toString()),
+                comboBox_flightType.getSelectionModel().getSelectedItem() == null ? null : Vacation.Flight_Type.valueOf(comboBox_flightType.getSelectionModel().getSelectedItem().toString()),
+                checkBox_hospitality.isSelected(),
+                checkBox_hospitality.isSelected() ? Integer.parseInt(textField_hospitality.getText()) : null);
 
 
-        List<VacationSell> vacationSells = model.getVacations();
         //add comboBox_flightType.getSelectionModel().getSelectedItem() == null ? null : Vacation.Flight_Type.valueOf(comboBox_flightType.getSelectionModel().getSelectedItem().toString()),
         vacations.getItems().addAll(vacationSells);
         Stage stage = new Stage();
