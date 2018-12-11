@@ -966,7 +966,7 @@ public class ViewController implements Initializable, Observer {
         vacations.setPrefWidth(2500);
         vacations.setPrefHeight(600);
         Stage stage = new Stage();
-        stage.setAlwaysOnTop(true);
+        stage.setAlwaysOnTop(false);
         stage.setResizable(false);
         stage.setTitle("Vacations");
         stage.initModality(Modality.APPLICATION_MODAL);
