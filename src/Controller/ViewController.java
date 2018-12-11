@@ -179,8 +179,8 @@ public class ViewController implements Initializable, Observer {
                                         try {
                                             fxmlLoader = new FXMLLoader(getClass().getResource("../View/PaymentWindow.fxml"));
                                             root = fxmlLoader.load();
-                                            PaymentWindowController controller=fxmlLoader.getController();
-                                            controller.setData(model,getTableView().getItems().get(getIndex()).getId());
+                                            PaymentWindowController controller = fxmlLoader.getController();
+                                            controller.setData(model, getTableView().getItems().get(getIndex()).getId());
                                         } catch (IOException e) {
                                             e.printStackTrace();
 //                                            showAlert("Exception!");
@@ -218,7 +218,7 @@ public class ViewController implements Initializable, Observer {
                     public TableCell<PurchaseRequest, String> call(final TableColumn<PurchaseRequest, String> param) {
                         final TableCell<PurchaseRequest, String> cell = new TableCell<PurchaseRequest, String>() {
 
-                            final Button btn = new Button("Buy");
+                            final Button btn = new Button("Accept request");
 
                             @Override
                             public void updateItem(String item, boolean empty) {
@@ -231,7 +231,7 @@ public class ViewController implements Initializable, Observer {
 //                                        showAlert()
                                         PurchaseRequest purchaseRequest = getTableView().getItems().get(getIndex());
                                         model.acceptRequest(purchaseRequest.getId());
-                                        getTableView().getItems().remove(getIndex());
+                                        refreshRequests();
                                     });
                                     setGraphic(btn);
                                     setText(null);
@@ -241,7 +241,37 @@ public class ViewController implements Initializable, Observer {
                         return cell;
                     }
                 };
-        tableView_receivedRequests = getRequestsTableView(tableView_receivedRequests, cellFactory2);
+        Callback<TableColumn<PurchaseRequest, String>, TableCell<PurchaseRequest, String>> cellFactory3
+                = //
+                new Callback<TableColumn<PurchaseRequest, String>, TableCell<PurchaseRequest, String>>() {
+                    @Override
+                    public TableCell<PurchaseRequest, String> call(final TableColumn<PurchaseRequest, String> param) {
+                        final TableCell<PurchaseRequest, String> cell = new TableCell<PurchaseRequest, String>() {
+
+                            final Button btn = new Button("reject request");
+
+                            @Override
+                            public void updateItem(String item, boolean empty) {
+                                super.updateItem(item, empty);
+                                if (empty) {
+                                    setGraphic(null);
+                                    setText(null);
+                                } else {
+                                    btn.setOnAction(event -> {
+//                                        showAlert()
+                                        PurchaseRequest purchaseRequest = getTableView().getItems().get(getIndex());
+                                        model.rejectRequest(purchaseRequest.getId());
+                                        refreshRequests();
+                                    });
+                                    setGraphic(btn);
+                                    setText(null);
+                                }
+                            }
+                        };
+                        return cell;
+                    }
+                };
+        tableView_receivedRequests = getRequestsTableView(tableView_receivedRequests, cellFactory2, cellFactory3);
 
 
         tabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
@@ -579,8 +609,8 @@ public class ViewController implements Initializable, Observer {
         }
     }
 
-    public void reserPublish(ActionEvent event){
-        if(Massage.confirmMassage("Are you sure you want to reset these details?")){
+    public void reserPublish(ActionEvent event) {
+        if (Massage.confirmMassage("Are you sure you want to reset these details?")) {
             clearPublish();
         }
     }
@@ -616,7 +646,7 @@ public class ViewController implements Initializable, Observer {
             if (baggageLimitPublish.getText().isEmpty()) {
                 Massage.errorMassage("Please fill all the fields as needed");
                 return true;
-            } else if (isNumber(baggageLimitPublish.getText())==false) {
+            } else if (isNumber(baggageLimitPublish.getText()) == false) {
                 Massage.errorMassage("Baggage limit must be a positive integer");
                 return true;
             }
@@ -642,7 +672,7 @@ public class ViewController implements Initializable, Observer {
             Massage.errorMassage("Number of tickets must be a positive integer");
             return true;
         }
-        if (flights==null || flights.size() == 0) {
+        if (flights == null || flights.size() == 0) {
             Massage.errorMassage("Number of listed flights must be at least 1");
             return true;
         }
@@ -694,7 +724,7 @@ public class ViewController implements Initializable, Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-        if(o instanceof FlightsListController){
+        if (o instanceof FlightsListController) {
             flights = ((ArrayList<Flight>) arg);
             flightListBut.setText("Flights list (" + flights.size() + ")");
         }
@@ -708,11 +738,12 @@ public class ViewController implements Initializable, Observer {
     }
 
 
-    private TableView<Flight> getRequestsTableView(TableView tableView, Callback<TableColumn<PurchaseRequest, String>, TableCell<PurchaseRequest, String>> cellFactory) {
+    private TableView<Flight> getRequestsTableView(TableView tableView, Callback<TableColumn<PurchaseRequest, String>, TableCell<PurchaseRequest, String>>... cellFactorys) {
         tableView = (TableView<PurchaseRequest>) tableView;
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
 
+        TableColumn<PurchaseRequest, String> requester_username = new TableColumn<>("requester username");
         TableColumn<PurchaseRequest, String> seller_username = new TableColumn<>("Seller username");
         TableColumn<PurchaseRequest, String> sourceCountry = new TableColumn<>("Source country");
         TableColumn<PurchaseRequest, String> destinationCountry = new TableColumn<>("Destination country");
@@ -727,6 +758,8 @@ public class ViewController implements Initializable, Observer {
         TableColumn<PurchaseRequest, Number> hospitality_Rank = new TableColumn<>("Hospitality rank");
         TableColumn<PurchaseRequest, String> vacation_type = new TableColumn<>("Vacation type");
 
+
+        requester_username.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getUsername()));
         seller_username.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getVacationSell().getVacation().getSeller_username()));
         sourceCountry.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getVacationSell().getVacation().getSourceCountry()));
         destinationCountry.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getVacationSell().getVacation().getDestinationCountry()));
@@ -741,52 +774,13 @@ public class ViewController implements Initializable, Observer {
         hospitality_Rank.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getVacationSell().getVacation().getHospitality_Rank()));
         vacation_type.setCellValueFactory(param -> new SimpleObjectProperty<>(String.valueOf(param.getValue().getVacationSell().getVacation().getVacation_type())));
 
-        TableColumn<PurchaseRequest, String> requset_buttons = new TableColumn<>();//Button
+        for (Callback<TableColumn<PurchaseRequest, String>, TableCell<PurchaseRequest, String>> cellCallback : cellFactorys) {
+            TableColumn<PurchaseRequest, String> column = new TableColumn<>();//Button
+            column.setCellFactory(cellCallback);
+            tableView.getColumns().add(column);
+        }
 
-//        Callback<TableColumn<VacationSell, String>, TableCell<VacationSell, String>> cellFactory
-//                = //
-//                new Callback<TableColumn<VacationSell, String>, TableCell<VacationSell, String>>() {
-//                    @Override
-//                    public TableCell<VacationSell, String> call(final TableColumn<VacationSell, String> param) {
-//                        final TableCell<VacationSell, String> cell = new TableCell<VacationSell, String>() {
-//
-//                            final Button btn = new Button(buttonName);
-//
-//                            @Override
-//                            public void updateItem(String item, boolean empty) {
-//                                super.updateItem(item, empty);
-//                                if (empty) {
-//                                    setGraphic(null);
-//                                    setText(null);
-//                                } else {
-//                                    btn.setOnAction(event -> {
-////                                        VacationSell vacationSell = getTableView().getItems().get(getIndex());
-////                                        Stage stage = new Stage();
-//////                    stage.getIcons().add(new Image(this.getClass().getResourceAsStream("icon.png")));
-////                                        stage.setAlwaysOnTop(true);
-////                                        stage.setResizable(false);
-////                                        stage.setTitle("vacation " + vacationSell.getId() + " flights");
-////                                        stage.initModality(Modality.APPLICATION_MODAL);
-////                                        ScrollPane scrollPane = new ScrollPane();
-////                                        TableView<Flight> flightsTableView = getFlightsTableView();
-////                                        flightsTableView.getItems().addAll(vacationSell.getVacation().getFlights());
-////                                        scrollPane.setContent(flightsTableView);
-////                                        flightsTableView.setPrefHeight(600);
-////                                        Scene scene = new Scene(scrollPane, flightsTableView.getMinWidth(), flightsTableView.getPrefHeight());
-////                                        stage.setScene(scene);
-////                                        stage.show();
-//                                    });
-//                                    setGraphic(btn);
-//                                    setText(null);
-//                                }
-//                            }
-//                        };
-//                        return cell;
-//                    }
-//                };
-
-        requset_buttons.setCellFactory(cellFactory);
-        tableView.getColumns().addAll(seller_username, sourceCountry, destinationCountry, ticketsType, flight_Type, max_Price_Per_Ticket, tickets_Quantity, canBuyLess, baggage_Included, baggageLimit, hospitality_Included, hospitality_Rank, vacation_type, requset_buttons);
+        tableView.getColumns().addAll(requester_username, seller_username, sourceCountry, destinationCountry, ticketsType, flight_Type, max_Price_Per_Ticket, tickets_Quantity, canBuyLess, baggage_Included, baggageLimit, hospitality_Included, hospitality_Rank, vacation_type);
         return tableView;
     }
 
@@ -938,7 +932,7 @@ public class ViewController implements Initializable, Observer {
                                                 Massage.infoMassage("sent request");
                                             else
                                                 Massage.errorMassage("set failed");
-                                        }else
+                                        } else
                                             Massage.errorMassage("You should login to request and buy vacation");
                                     });
                                     setGraphic(btn);
@@ -955,7 +949,7 @@ public class ViewController implements Initializable, Observer {
         vacations.getColumns().addAll(seller_username, sourceCountry, destinationCountry, ticketsType, flight_Type, max_Price_Per_Ticket, tickets_Quantity, canBuyLess, baggage_Included, baggageLimit, hospitality_Included, hospitality_Rank, vacation_type, seeMore_buttons, requset_buttons);
 
         List<VacationSell> vacationSells = model.getVacations(
-                textField_flightCompany.getText(),
+                textField_flightCompany.getText().equals("") ? null : textField_flightCompany.getText(),
                 datePicker_fromDate.getValue(),
                 datePicker_toDate.getValue(),
                 checkBox_baggage.isSelected(),
