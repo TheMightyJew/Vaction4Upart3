@@ -486,7 +486,7 @@ public class ViewController implements Initializable, Observer {
 
     public void show(ActionEvent event) {
         if (model.userExist(usernameRead.getText()) == true) {
-            User user = model.getUser(username);
+            User user = model.getUser(usernameRead.getText());
             firstRead.setText(user.getFirst_Name());
             lastRead.setText(user.getLast_Name());
             birthRead.setText(localDate2Str(user.getBirth_Date()));
