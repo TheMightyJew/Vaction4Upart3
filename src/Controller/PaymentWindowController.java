@@ -8,7 +8,9 @@ import javafx.scene.Node;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 
-public class PaymentWindowController {
+import java.util.Observable;
+
+public class PaymentWindowController extends Observable {
 
     public TextField firstNamePayment;
     public TextField lastNamePayment;
@@ -35,8 +37,12 @@ public class PaymentWindowController {
             Massage.errorMassage("Error in input");
         }
         else{
-            if(model.payForVacation(requestID,new VisaPayment((int)(Integer.parseInt(cardNumberPayment.getText())),(int)(Integer.parseInt(cvvPayment.getText())),datePayment.getValue(),idPayment.getText(),firstNamePayment.getText(),lastNamePayment.getText())))
+            if(model.payForVacation(requestID,new VisaPayment((int)(Integer.parseInt(cardNumberPayment.getText())),(int)(Integer.parseInt(cvvPayment.getText())),datePayment.getValue(),idPayment.getText(),firstNamePayment.getText(),lastNamePayment.getText()))){
                 Massage.infoMassage("Payment was made successfully");
+                setChanged();
+                notifyObservers();
+                closeStage(event);
+            }
             else{
                 Massage.errorMassage("Payment failed");
             }

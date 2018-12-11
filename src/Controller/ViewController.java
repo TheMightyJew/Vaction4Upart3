@@ -698,6 +698,9 @@ public class ViewController implements Initializable, Observer {
             flights = ((ArrayList<Flight>) arg);
             flightListBut.setText("Flights list (" + flights.size() + ")");
         }
+        if(o instanceof PaymentWindowController){
+            refreshRequests();
+        }
     }
 
     public void cleanFilters(ActionEvent actionEvent) {
