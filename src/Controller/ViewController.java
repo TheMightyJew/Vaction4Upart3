@@ -962,7 +962,7 @@ public class ViewController implements Initializable, Observer {
         //add comboBox_flightType.getSelectionModel().getSelectedItem() == null ? null : Vacation.Flight_Type.valueOf(comboBox_flightType.getSelectionModel().getSelectedItem().toString()),
         vacations.getItems().addAll(vacationSells);
         Stage stage = new Stage();
-        stage.setAlwaysOnTop(true);
+        stage.setAlwaysOnTop(false);
         stage.setResizable(false);
         stage.setTitle("Vacations");
         stage.initModality(Modality.APPLICATION_MODAL);
