@@ -2,29 +2,24 @@ package Model;
 
 
 import Model.Objects.*;
-import javafx.util.Pair;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 public interface IModel {
     //Users Actions
-    void createUser(String Username_val, String Password_val, String Birthday_val, String FirstName_val, String LastName_val, String City_val, String State);
+    void createUser(String Username_val, String Password_val, String Birthday_val, String FirstName_val, String LastName_val, String City_val,String State);
 
     //String[] getUser(String Username_val);
 
-    void updateUserInfo(String Username_key, String Username_val, String Password_val, String Birthday_val, String FirstName_val, String LastName_val, String City_val, String State);
-
-    boolean deleteUser(String string);
+    void updateUserInfo(String Username_key, String Username_val, String Password_val, String Birthday_val, String FirstName_val, String LastName_val, String City_val,String State);
+    boolean deleteUser(String username);
 
     boolean userExist(String username);
 
     //update top functions to this functions:
     boolean createUser(User user);
-
     User getUser(String Username_val);
-
     boolean updateUserInfo(String username, User user);
     //new functions:
 
@@ -48,6 +43,7 @@ public interface IModel {
      * @param ticketsNum          - The number of tickets the user want to be possible to purchase from the vacation
      * @param tickets_type        -
      * @param maxPricePerTicket   - The vacation
+     *
      * @param sourceCountry       -
      * @param destCountry         -
      * @param vacation_type       -
@@ -55,7 +51,7 @@ public interface IModel {
      * @param minHospitalityRank  -
      * @return list of vacationsell where status=available;
      */
-    List<VacationSell> getVacations(String flightCompany, LocalDate fromDate, LocalDate toDate, boolean baggage, Integer baggageMin, Integer ticketsNum, Vacation.Tickets_Type tickets_type, Integer maxPricePerTicket, String sourceCountry, String destCountry, Vacation.Vacation_Type vacation_type, Vacation.Flight_Type flight_type, boolean hospitalityIncluded, Integer minHospitalityRank);
+    List<VacationSell> getVacations(String flightCompany, LocalDate fromDate, LocalDate toDate, boolean baggage, Integer baggageMin, Integer ticketsNum, Vacation.Tickets_Type tickets_type, Integer maxPricePerTicket, String sourceCountry, String destCountry, Vacation.Vacation_Type vacation_type,Vacation.Flight_Type flight_type, boolean hospitalityIncluded, Integer minHospitalityRank);
 
     /**
      * This functions should put the request in the database with unique id
@@ -82,13 +78,11 @@ public interface IModel {
 
     /**
      * @param requestId
-     * @return if succeeded
      */
     boolean acceptRequest(int requestId);
 
     /**
      * @param requestId
-     * @return if succeeded
      */
     boolean rejectRequest(int requestId);
 
@@ -97,7 +91,7 @@ public interface IModel {
      *
      * @param requestId
      * @param payment
-     * @return if succeeded
+     * @return
      */
     boolean payForVacation(int requestId, Payment payment);
 }

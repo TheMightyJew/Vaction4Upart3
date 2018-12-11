@@ -23,7 +23,7 @@ public class Model implements IModel {
 
     public enum FlightsToVacationsfieldNameEnum {Vacation_id, Flight_id}
 
-    public enum VacationsfieldNameEnum {Vacation_id, Publisher_Username, Source_Country, Destination_Country,From_Date,To_Date, Price_Per_ticket, Num_Of_Passengers, Can_Buy_less_Tickets, Tickets_Type, Vacation_Type, Flight_Type, Baggage_Limit, Lodging_Included, Lodging_Rating, Vacation_Status;}
+    public enum VacationsfieldNameEnum {Vacation_id, Publisher_Username, Source_Country, Destination_Country, From_Date, To_Date, Price_Per_ticket, Num_Of_Passengers, Can_Buy_less_Tickets, Tickets_Type, Vacation_Type, Flight_Type, Baggage_Limit, Lodging_Included, Lodging_Rating, Vacation_Status;}
 
 //    public enum PurchasesfieldNameEnum {Username, VacationID, PaymentCompany, CardNumber, CVV, ValidDate, UserID, FirstName, LastName;}
 
@@ -502,18 +502,18 @@ public class Model implements IModel {
         if (baggage > 0)
             baggage = vacation.getBaggageLimit();
         try {
-            insertQuery(tableNameEnum.Vacations_Table.name(), VacationsfieldNameEnum.class, new String[]{null, vacation.getSeller_username(), vacation.getSourceCountry(), vacation.getDestinationCountry(),vacation.getFromDate().toString(),vacation.getToDate().toString(), String.valueOf(vacation.getPrice_Per_Ticket()),
+            insertQuery(tableNameEnum.Vacations_Table.name(), VacationsfieldNameEnum.class, new String[]{null, vacation.getSeller_username(), vacation.getSourceCountry(), vacation.getDestinationCountry(), vacation.getFromDate().toString(), vacation.getToDate().toString(), String.valueOf(vacation.getPrice_Per_Ticket()),
                     String.valueOf(vacation.getTickets_Quantity()), String.valueOf(vacation.isCanBuyLess()), vacation.getTicketsType().name(), vacation.getVacation_type().name(), vacation.getFlight_Type().name(), String.valueOf(baggage), String.valueOf(vacation.isHospitality_Included()), String.valueOf(vacation.getHospitality_Rank()), VacationSell.Vacation_Status.available.name()});
-            String vacationID = selectQuery(tableNameEnum.Vacations_Table.name(), VacationsfieldNameEnum.Publisher_Username.name() + "='"+vacation.getSeller_username()+"' AND "+VacationsfieldNameEnum.Source_Country.name() + "='"+vacation.getSourceCountry()+"' AND "+VacationsfieldNameEnum.Destination_Country.name() + "='"+vacation.getDestinationCountry()
-                    +"' AND " +VacationsfieldNameEnum.From_Date+"='"+vacation.getFromDate().toString()+"' AND " +VacationsfieldNameEnum.To_Date+"='"+vacation.getToDate().toString()+"' AND "+VacationsfieldNameEnum.Price_Per_ticket.name() + "='"+vacation.getPrice_Per_Ticket()+"' AND "+VacationsfieldNameEnum.Num_Of_Passengers.name() + "='"+vacation.getTickets_Quantity()+"' AND "+VacationsfieldNameEnum.Can_Buy_less_Tickets.name() + "='"+vacation.isCanBuyLess()+"' AND "
-                    +VacationsfieldNameEnum.Tickets_Type.name() + "='"+vacation.getTicketsType().name()+"' AND "+VacationsfieldNameEnum.Vacation_Type.name() + "='"+vacation.getVacation_type().name()+"' AND "+VacationsfieldNameEnum.Flight_Type.name() + "='"+vacation.getFlight_Type().name()+"' AND "+VacationsfieldNameEnum.Baggage_Limit.name() + "='"+baggage+"' AND "
-                    +VacationsfieldNameEnum.Lodging_Included.name() + "='"+vacation.isHospitality_Included()+"' AND "+VacationsfieldNameEnum.Lodging_Rating.name() + "='"+vacation.getHospitality_Rank()+"'").get(0)[0];
+            String vacationID = selectQuery(tableNameEnum.Vacations_Table.name(), VacationsfieldNameEnum.Publisher_Username.name() + "='" + vacation.getSeller_username() + "' AND " + VacationsfieldNameEnum.Source_Country.name() + "='" + vacation.getSourceCountry() + "' AND " + VacationsfieldNameEnum.Destination_Country.name() + "='" + vacation.getDestinationCountry()
+                    + "' AND " + VacationsfieldNameEnum.From_Date + "='" + vacation.getFromDate().toString() + "' AND " + VacationsfieldNameEnum.To_Date + "='" + vacation.getToDate().toString() + "' AND " + VacationsfieldNameEnum.Price_Per_ticket.name() + "='" + vacation.getPrice_Per_Ticket() + "' AND " + VacationsfieldNameEnum.Num_Of_Passengers.name() + "='" + vacation.getTickets_Quantity() + "' AND " + VacationsfieldNameEnum.Can_Buy_less_Tickets.name() + "='" + vacation.isCanBuyLess() + "' AND "
+                    + VacationsfieldNameEnum.Tickets_Type.name() + "='" + vacation.getTicketsType().name() + "' AND " + VacationsfieldNameEnum.Vacation_Type.name() + "='" + vacation.getVacation_type().name() + "' AND " + VacationsfieldNameEnum.Flight_Type.name() + "='" + vacation.getFlight_Type().name() + "' AND " + VacationsfieldNameEnum.Baggage_Limit.name() + "='" + baggage + "' AND "
+                    + VacationsfieldNameEnum.Lodging_Included.name() + "='" + vacation.isHospitality_Included() + "' AND " + VacationsfieldNameEnum.Lodging_Rating.name() + "='" + vacation.getHospitality_Rank() + "'").get(0)[0];
             List<String[]> records_of_flight = selectQuery(tableNameEnum.Flights_table.name(), "'1'='1'");
             int nextFlightID = records_of_flight.size() + 1;
             for (Flight flight : vacation.getFlights()) {
                 insertQuery(tableNameEnum.Flights_table.name(), FlightsfieldNameEnum.class, new String[]{null, flight.getSourceAirPort(), flight.getDestinationAirPort(), flight.getDepartDate().toString(), flight.getDepartHour(), flight.getLandDate().toString(), flight.getLandHour(), flight.getFlightCompany()});
-                String flightID = selectQuery(tableNameEnum.Flights_table.name(),FlightsfieldNameEnum.OriginAirport.name() + "='"+flight.getSourceAirPort()+"' AND "+FlightsfieldNameEnum.DestinationAirport.name() + "='"+flight.getDestinationAirPort()+"' AND "+FlightsfieldNameEnum.DepartureDate.name() + "='"+flight.getDepartDate().toString()+"' AND "
-                        +FlightsfieldNameEnum.DepartureTime.name() + "='"+flight.getDepartHour()+"' AND " + FlightsfieldNameEnum.ArrivalDate.name() + "='"+flight.getLandDate().toString()+"' AND " + FlightsfieldNameEnum.ArrivalTime.name() + "='"+flight.getLandHour()+"' AND "+FlightsfieldNameEnum.FlightComapny.name() + "='"+flight.getFlightCompany()+"'").get(0)[0];
+                String flightID = selectQuery(tableNameEnum.Flights_table.name(), FlightsfieldNameEnum.OriginAirport.name() + "='" + flight.getSourceAirPort() + "' AND " + FlightsfieldNameEnum.DestinationAirport.name() + "='" + flight.getDestinationAirPort() + "' AND " + FlightsfieldNameEnum.DepartureDate.name() + "='" + flight.getDepartDate().toString() + "' AND "
+                        + FlightsfieldNameEnum.DepartureTime.name() + "='" + flight.getDepartHour() + "' AND " + FlightsfieldNameEnum.ArrivalDate.name() + "='" + flight.getLandDate().toString() + "' AND " + FlightsfieldNameEnum.ArrivalTime.name() + "='" + flight.getLandHour() + "' AND " + FlightsfieldNameEnum.FlightComapny.name() + "='" + flight.getFlightCompany() + "'").get(0)[0];
                 insertQuery(tableNameEnum.FlightsToVacations_Table.name(), FlightsToVacationsfieldNameEnum.class, new String[]{String.valueOf(vacationID), String.valueOf(flightID)});
             }
             return true;
@@ -563,7 +563,7 @@ public class Model implements IModel {
             }
             i--;
             String[] tableIni = table.get(i);
-            Vacation vacation = new Vacation(tableIni[1],LocalDate.parse(tableIni[7]), LocalDate.parse(tableIni[8]), Integer.parseInt(tableIni[2]), Integer.parseInt(tableIni[3]), tableIni[4].equals("true"), tableIni[5], tableIni[6], (Integer.parseInt(tableIni[9]) > 0), Integer.parseInt(tableIni[9])
+            Vacation vacation = new Vacation(tableIni[1], LocalDate.parse(tableIni[7]), LocalDate.parse(tableIni[8]), Integer.parseInt(tableIni[2]), Integer.parseInt(tableIni[3]), tableIni[4].equals("true"), tableIni[5], tableIni[6], (Integer.parseInt(tableIni[9]) > 0), Integer.parseInt(tableIni[9])
                     , Vacation.Tickets_Type.valueOf(tableIni[10]), flights_to_vacation, Vacation.Flight_Type.valueOf(tableIni[11]), Vacation.Vacation_Type.valueOf(tableIni[12]), tableIni[13].equals("true"), Integer.parseInt(tableIni[14]));
             VacationSell vacationSell = new VacationSell(vacID, vacation, VacationSell.Vacation_Status.valueOf(tableIni[13]));
             optinalVacation.add(vacationSell);
@@ -728,7 +728,8 @@ public class Model implements IModel {
     @Override
     public boolean payForVacation(int requestId, Payment payment) {
         String usernamePaying = selectQuery(tableNameEnum.PurchaseRequests_Table.toString(), PurchaseRequestsfieldNameEnum.PurchaseRequest_id.toString() + "='" + requestId + "'").get(0)[1];
-        String vacationId = selectQuery(tableNameEnum.PurchaseRequests_Table.toString(), PurchaseRequestsfieldNameEnum.PurchaseRequest_id.toString() + "='" + requestId + "'").get(0)[2];
+        String[] requestInfo = selectQuery(tableNameEnum.PurchaseRequests_Table.toString(), PurchaseRequestsfieldNameEnum.PurchaseRequest_id.toString() + "='" + requestId + "'").get(0);
+        String vacationId = requestInfo[2];
         String paymentMethod = "";
         if (payment.isVisa())
             paymentMethod = "Visa";
@@ -748,6 +749,7 @@ public class Model implements IModel {
         }
         PayaplPayment ppp;
         VisaPayment vp;
+        boolean successPay = false;
         if (payment.isPaypal()) {
             ppp = (PayaplPayment) payment;
             String[] newvalues = {PaymentID, ppp.getEmail(), ppp.getPassword()};
@@ -756,7 +758,7 @@ public class Model implements IModel {
             } catch (SQLException e) {
                 return false;
             }
-            return true;
+            successPay = true;
         }
         if (payment.isVisa()) {
             vp = (VisaPayment) payment;
@@ -764,6 +766,17 @@ public class Model implements IModel {
             try {
                 insertQuery(tableNameEnum.VisaPayment_Table.toString(), VisePaymentfieldsEnum.class, newvalues);
             } catch (SQLException e) {
+                return false;
+            }
+            successPay = true;
+        }
+        if (successPay) {
+            String[] vacationInfo = selectQuery(tableNameEnum.Vacations_Table.name(), VacationsfieldNameEnum.Vacation_id + "='" + vacationId + "'").get(0);
+            vacationInfo[15] = VacationSell.Vacation_Status.sold.name();
+            try {
+                updateQuery(tableNameEnum.Vacations_Table.name(), VacationsfieldNameEnum.class, vacationInfo, VacationsfieldNameEnum.Vacation_id + "='" + vacationId + "'");
+            } catch (SQLException e) {
+                e.printStackTrace();
                 return false;
             }
             return true;
@@ -793,15 +806,15 @@ public class Model implements IModel {
 //        Vacation vac = new Vacation("rami",LocalDate.parse("1998-11-11"),LocalDate.parse("1998-12-11"),1,1,false,"Marocow","Denemark",true,3,Vacation.Tickets_Type.Business_class,flights,Vacation.Flight_Type.One_Way,Vacation.Vacation_Type.Pleasure,true,4);
 //        System.out.println(model.publishVacation(vac));
     }
-    public static void TestPublishVacation()
-    {
+
+    public static void TestPublishVacation() {
         Model model = new Model("Vaction4U");
-        Flight flight = new Flight("indiaair","india","hodu",LocalDate.parse("1998-11-12"),LocalDate.parse("1998-11-13"),"15:15","12:12");
-        Flight flight1 = new Flight("slovakoaair","slovakia","romania",LocalDate.parse("1998-11-13"),LocalDate.parse("1998-11-14"),"13:13","14:14");
+        Flight flight = new Flight("indiaair", "india", "hodu", LocalDate.parse("1998-11-12"), LocalDate.parse("1998-11-13"), "15:15", "12:12");
+        Flight flight1 = new Flight("slovakoaair", "slovakia", "romania", LocalDate.parse("1998-11-13"), LocalDate.parse("1998-11-14"), "13:13", "14:14");
         List<Flight> flights = new ArrayList<>();
         flights.add(flight);
         flights.add(flight1);
-        Vacation vac = new Vacation("rami",LocalDate.parse("1998-11-11"),LocalDate.parse("1998-12-11"),1,1,false,"Marocow","Denemark",true,3,Vacation.Tickets_Type.Business_class,flights,Vacation.Flight_Type.One_Way,Vacation.Vacation_Type.Pleasure,true,4);
+        Vacation vac = new Vacation("rami", LocalDate.parse("1998-11-11"), LocalDate.parse("1998-12-11"), 1, 1, false, "Marocow", "Denemark", true, 3, Vacation.Tickets_Type.Business_class, flights, Vacation.Flight_Type.One_Way, Vacation.Vacation_Type.Pleasure, true, 4);
         System.out.println(model.publishVacation(vac));
 
     }
