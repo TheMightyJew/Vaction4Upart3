@@ -177,7 +177,7 @@ public class ViewController implements Initializable, Observer {
                                         Parent root = null;
                                         FXMLLoader fxmlLoader = null;
                                         try {
-                                            fxmlLoader = new FXMLLoader(getClass().getResource("PaymentWindow.fxml"));
+                                            fxmlLoader = new FXMLLoader(getClass().getResource("../View/PaymentWindow.fxml"));
                                             root = fxmlLoader.load();
                                         } catch (IOException e) {
                                             e.printStackTrace();
