@@ -17,16 +17,16 @@ public class Vacation {
     private boolean canBuyLess;//true\false
     private String sourceCountry;//
     private String destinationCountry;//
-    private boolean baggage;//if baggageLimit>0 -> true, else false
-    private int baggageLimit;
+    private boolean baggage_Included;//if baggageLimit>0 -> true, else false
+    private Integer baggageLimit;
     private Tickets_Type ticketsType;//
     private List<Flight> flights;//
     private Flight_Type flight_Type;//
     private Vacation_Type vacation_type;//
     private boolean hospitality_Included;//
-    private int hospitality_Rank;//between 1 to 5
+    private Integer hospitality_Rank;//between 1 to 5
 
-    public Vacation(String seller_username, LocalDate fromDate, LocalDate toDate, int price_Per_Ticket, int tickets_Quantity, boolean canBuyLess, String sourceCountry, String destinationCountry, boolean baggage, int baggageLimit, Tickets_Type ticketsType, List<Flight> flights, Flight_Type flight_Type, Vacation_Type vacation_type, boolean hospitality_Included, int hospitality_Rank) {
+    public Vacation(String seller_username, LocalDate fromDate, LocalDate toDate, int price_Per_Ticket, int tickets_Quantity, boolean canBuyLess, String sourceCountry, String destinationCountry, boolean baggage_Included, Integer baggageLimit, Tickets_Type ticketsType, List<Flight> flights, Flight_Type flight_Type, Vacation_Type vacation_type, boolean hospitality_Included, Integer hospitality_Rank) {
         this.seller_username = seller_username;
         this.fromDate = fromDate;
         this.toDate = toDate;
@@ -35,7 +35,7 @@ public class Vacation {
         this.canBuyLess = canBuyLess;
         this.sourceCountry = sourceCountry;
         this.destinationCountry = destinationCountry;
-        this.baggage = baggage;
+        this.baggage_Included = baggage_Included;
         this.baggageLimit = baggageLimit;
         this.ticketsType = ticketsType;
         this.flights = flights;
@@ -77,11 +77,11 @@ public class Vacation {
         return destinationCountry;
     }
 
-    public boolean isBaggage() {
-        return baggage;
+    public boolean isBaggage_Included() {
+        return baggage_Included;
     }
 
-    public int getBaggageLimit() {
+    public Integer getBaggageLimit() {
         return baggageLimit;
     }
 
@@ -105,7 +105,7 @@ public class Vacation {
         return hospitality_Included;
     }
 
-    public int getHospitality_Rank() {
+    public Integer getHospitality_Rank() {
         return hospitality_Rank;
     }
 }

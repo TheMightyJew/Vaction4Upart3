@@ -14,4 +14,20 @@ public class PurchaseRequest {
         this.vacationSell = vacationSell;
         this.status = status;
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public VacationSell getVacationSell() {
+        return vacationSell;
+    }
+
+    public Request_Status getStatus() {
+        return status;
+    }
 }

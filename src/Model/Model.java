@@ -500,7 +500,7 @@ public class Model implements IModel {
 
     @Override
     public boolean publishVacation(Vacation vacation) {
-        int baggage = vacation.isBaggage() ? 1 : 0;
+        int baggage = vacation.isBaggage_Included() ? 1 : 0;
         if (baggage > 0)
             baggage = vacation.getBaggageLimit();
         try {
@@ -524,6 +524,21 @@ public class Model implements IModel {
         String where_condition = "";
 //        if(!flightCompany.equals(""))
         return null;
+    }
+
+    //TODO delete
+    public List<VacationSell> getVacations()
+    {
+        List<VacationSell> ans = new ArrayList<>();
+        Flight f1 = new Flight("el al", "Tel Aviv", "Cayman Islands", LocalDate.of(1998,10,1), LocalDate.of(1998,10,1), "15:10", "16:10");
+        Flight f2 = new Flight("Iossi airlines", "Tel Aviv", "Cayman Islands", LocalDate.of(1998,10,1), LocalDate.of(1998,10,1), "15:10", "17:10");
+        Flight f3 = new Flight("bershka alal", "Italy", "Sweden", LocalDate.of(1998,10,1), LocalDate.of(1998,10,1), "05:10", "06:10");
+        Flight f4 = new Flight("bershka alal", "Italy", "Sweden", LocalDate.of(1998,10,1), LocalDate.of(1998,10,1), "05:10", "06:10");
+        Flight f5 = new Flight("stiven alal", "Italy", "Sweden", LocalDate.of(1998,10,1), LocalDate.of(1998,10,1), "05:10", "06:10");
+        ans.add(new VacationSell(1, new Vacation("eran", LocalDate.of(1998,10,1), LocalDate.of(1998,10,1), 1,10,false, "Israel", "Cayman Islands", false, null, Vacation.Tickets_Type.Business_class, Arrays.asList(f1, f2), Vacation.Flight_Type.One_Way, Vacation.Vacation_Type.Business, false, null), VacationSell.Vacation_Status.available));
+        ans.add(new VacationSell(1, new Vacation("eran", LocalDate.of(1998,10,1), LocalDate.of(1998,10,1), 1,15, true,"Israel", "Cayman Islands", false, null, Vacation.Tickets_Type.Business_class, Arrays.asList(f3, f4), Vacation.Flight_Type.One_Way, Vacation.Vacation_Type.Business, false, null), VacationSell.Vacation_Status.available));
+        ans.add(new VacationSell(1, new Vacation("eran", LocalDate.of(1998,10,1), LocalDate.of(1998,10,1), 8,1, false,"Israel", "Cayman Islands", false, null, Vacation.Tickets_Type.Business_class, Arrays.asList(f5), Vacation.Flight_Type.One_Way, Vacation.Vacation_Type.Business, false, null), VacationSell.Vacation_Status.available));
+        return ans;
     }
 
     @Override

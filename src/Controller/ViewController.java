@@ -1,10 +1,7 @@
 package Controller;
 
 import Model.Model;
-import Model.Objects.Flight;
-import Model.Objects.User;
-import Model.Objects.Vacation;
-import Model.Objects.VacationSell;
+import Model.Objects.*;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
@@ -21,12 +18,14 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
+
+import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-public class ViewController implements Initializable,Observer {
+public class ViewController implements Initializable, Observer {
 
     //tabs
     public TabPane tabPane;
@@ -84,10 +83,10 @@ public class ViewController implements Initializable,Observer {
     public Button update;
 
     //vacations tab
-        //search tab
+    //search tab
     public GridPane gridPane_searchFilters;
     public TextField textField_flightCompany;
-    public TextField textField_ticketsType;
+    public ComboBox comboBox_ticketsType;
     public TextField textField_sourceCountry;
     public TextField textField_destinationCountry;
     public TextField textField_maxPricePerTicket;
@@ -100,7 +99,7 @@ public class ViewController implements Initializable,Observer {
     public ComboBox comboBox_vacationType;
     public DatePicker datePicker_fromDate;
     public DatePicker datePicker_toDate;
-            //publish tab
+    //publish tab
     public TextField sourcePublish;
     public TextField destinationPublish;
     public TextField ticketsNumPublish;
@@ -117,21 +116,27 @@ public class ViewController implements Initializable,Observer {
     public CheckBox baggagePublish;
     public Button flightListBut;
 
+    //requests tab
+    public TableView tableView_myRequests;
+    public TableView tableView_receivedRequests;
+
+
     private final String directoryPath = "C:/DATABASE/";//////
     private final String databaseName = "database.db";
     private final String tableName = "Users_Table";
+
     private Model model;
-    private String username="";
-    private boolean loggedIn=false;
+    private String username = "";
+    private boolean loggedIn = false;
     private ArrayList<Flight> flights;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         tabSignOut();
         String pattern = "dd-MM-yyyy";
-        changeDateFormat(birthCreate,pattern);
-        changeDateFormat(birthUpdate,pattern);
-        username="";
+        changeDateFormat(birthCreate, pattern);
+        changeDateFormat(birthUpdate, pattern);
+        username = "";
         //publishTab
         baggageLimitPublish.setText("0");
         baggageLimitPublish.setDisable(true);
@@ -142,6 +147,111 @@ public class ViewController implements Initializable,Observer {
         ticketsClassPublish.getItems().addAll(Vacation.Tickets_Type.values());
         setTabsClosable(false);
         tabSearchInit();
+        tabRequestsInit();
+    }
+
+    private void tabRequestsInit() {
+        Callback<TableColumn<PurchaseRequest, String>, TableCell<PurchaseRequest, String>> cellFactory1
+                = //
+                new Callback<TableColumn<PurchaseRequest, String>, TableCell<PurchaseRequest, String>>() {
+                    @Override
+                    public TableCell<PurchaseRequest, String> call(final TableColumn<PurchaseRequest, String> param) {
+                        final TableCell<PurchaseRequest, String> cell = new TableCell<PurchaseRequest, String>() {
+
+                            final Button btn = new Button("Buy");
+
+                            @Override
+                            public void updateItem(String item, boolean empty) {
+                                super.updateItem(item, empty);
+                                if (empty) {
+                                    setGraphic(null);
+                                    setText(null);
+                                } else {
+                                    btn.setOnAction(event -> {
+                                        Stage stage = new Stage();
+                                        stage.setAlwaysOnTop(true);
+                                        stage.setResizable(false);
+                                        stage.setTitle("Payment Window");
+
+                                        Parent root = null;
+                                        FXMLLoader fxmlLoader = null;
+                                        try {
+                                            fxmlLoader = new FXMLLoader(getClass().getResource("PaymentWindow.fxml"));
+                                            root = fxmlLoader.load();
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+//                                            showAlert("Exception!");
+                                        }
+                                        Scene scene = new Scene(root, 600, 650);
+                                        stage.setScene(scene);
+//                                        AView view = fxmlLoader.getController();
+//                                        view.setViewModel(viewModel);
+//                                        viewModel.addObserver(view);
+//        stage.initModality(Modality.APPLICATION_MODAL);
+                                        stage.setOnCloseRequest(event1 -> refreshRequests());
+                                        stage.show();
+
+                                    });
+                                    PurchaseRequest purchaseRequest = getTableView().getItems().get(getIndex());
+                                    if (purchaseRequest.getStatus().equals(PurchaseRequest.Request_Status.accepted)) {
+                                        setGraphic(btn);
+                                        setText(null);
+                                    } else {
+                                        setGraphic(null);
+                                        setText(purchaseRequest.getStatus().toString());
+                                    }
+                                }
+                            }
+                        };
+                        return cell;
+                    }
+                };
+        tableView_myRequests = getRequestsTableView(tableView_myRequests, cellFactory1);
+        Callback<TableColumn<PurchaseRequest, String>, TableCell<PurchaseRequest, String>> cellFactory2
+                = //
+                new Callback<TableColumn<PurchaseRequest, String>, TableCell<PurchaseRequest, String>>() {
+                    @Override
+                    public TableCell<PurchaseRequest, String> call(final TableColumn<PurchaseRequest, String> param) {
+                        final TableCell<PurchaseRequest, String> cell = new TableCell<PurchaseRequest, String>() {
+
+                            final Button btn = new Button("Buy");
+
+                            @Override
+                            public void updateItem(String item, boolean empty) {
+                                super.updateItem(item, empty);
+                                if (empty) {
+                                    setGraphic(null);
+                                    setText(null);
+                                } else {
+                                    btn.setOnAction(event -> {
+//                                        showAlert()
+                                        PurchaseRequest purchaseRequest = getTableView().getItems().get(getIndex());
+                                        model.acceptRequest(purchaseRequest.getId());
+                                        getTableView().getItems().remove(getIndex());
+                                    });
+                                    setGraphic(btn);
+                                    setText(null);
+                                }
+                            }
+                        };
+                        return cell;
+                    }
+                };
+        tableView_receivedRequests = getRequestsTableView(tableView_receivedRequests, cellFactory2);
+
+
+        tabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == requestTab) {
+                refreshRequests();
+            }
+        });
+    }
+
+    private void refreshRequests() {
+        tableView_myRequests.getItems().clear();
+        tableView_myRequests.getItems().addAll(model.getMyRequests(username));
+        tableView_receivedRequests.getItems().clear();
+        tableView_myRequests.getItems().addAll(model.getReceivedRequests(username));
     }
 
     private void tabSearchInit() {
@@ -151,6 +261,7 @@ public class ViewController implements Initializable,Observer {
         checkBox_hospitality.selectedProperty().addListener((observable, oldValue, newValue) -> textField_hospitality.setDisable(!newValue));
         comboBox_flightType.getItems().addAll(Vacation.Flight_Type.values());
         comboBox_vacationType.getItems().addAll(Vacation.Vacation_Type.values());
+        comboBox_ticketsType.getItems().addAll(Vacation.Tickets_Type.values());
         textFieldNumbersOnlyRestrict(textField_baggage);
         textFieldNumbersOnlyRestrict(textField_hospitality);
     }
@@ -176,8 +287,7 @@ public class ViewController implements Initializable,Observer {
         personalTab.setClosable(b);
     }
 
-    private void changeDateFormat(DatePicker dp, String pattern)
-    {
+    private void changeDateFormat(DatePicker dp, String pattern) {
         dp.setPromptText(pattern.toLowerCase());
 
         dp.setConverter(new StringConverter<LocalDate>() {
@@ -204,14 +314,14 @@ public class ViewController implements Initializable,Observer {
         dp.setPromptText(pattern);
     }
 
-    public void setModel(Model model){
-        this.model=model;
+    public void setModel(Model model) {
+        this.model = model;
     }
 
-    public void tabSignOut(){
+    public void tabSignOut() {
         clearAll();
-        username="";
-        tabPane.getTabs().remove(0,tabPane.getTabs().size());
+        username = "";
+        tabPane.getTabs().remove(0, tabPane.getTabs().size());
         tabPane.getTabs().add(signTab);
         tabPane.getTabs().add(createTab);
         vacationTabPane.getTabs().removeAll(publishTab);
@@ -221,16 +331,16 @@ public class ViewController implements Initializable,Observer {
         create.setOnAction(this::signUp);
     }
 
-    public void tabSignIn(){
+    public void tabSignIn() {
         clearAll();
-        tabPane.getTabs().remove(0,3);
+        tabPane.getTabs().remove(0, 3);
         vacationTabPane.getTabs().add(publishTab);
-        tabPane.getTabs().addAll(personalTab,vacationsTab,requestTab);
+        tabPane.getTabs().addAll(personalTab, vacationsTab, requestTab);
     }
 
-    public void signUp(ActionEvent event){
-        if(create(event)){
-            signIn(event,usernameCreate.getText(),passwordCreate.getText());
+    public void signUp(ActionEvent event) {
+        if (create(event)) {
+            signIn(event, usernameCreate.getText(), passwordCreate.getText());
             clearCreate();
             event.consume();
         }
@@ -289,21 +399,17 @@ public class ViewController implements Initializable,Observer {
     }
 
     public boolean create(ActionEvent event) {
-        if(createEmpty()==true){
+        if (createEmpty() == true) {
             Massage.errorMassage("Please fill all the fields");
-        }
-        else if(passwordCreate.getText().equals(confirmCreate.getText())==false){
+        } else if (passwordCreate.getText().equals(confirmCreate.getText()) == false) {
             Massage.errorMassage("Password must be match in both options");
-        }
-        else if(model.userExist(usernameCreate.getText())==true){
+        } else if (model.userExist(usernameCreate.getText()) == true) {
             Massage.errorMassage("Username already taken");
-        }
-        else if(dateCheck(birthCreate.getValue())==false){
+        } else if (dateCheck(birthCreate.getValue()) == false) {
             Massage.errorMassage("Age must be at least 18");
-        }
-        else if(Massage.confirmMassage("Are you sure you want to Create an account with these details?")){
+        } else if (Massage.confirmMassage("Are you sure you want to Create an account with these details?")) {
             //model.createUser(usernameCreate.getText(),passwordCreate.getText(),DatePicker2Str(birthCreate),firstCreate.getText(),lastCreate.getText(),cityCreate.getText());
-            model.createUser(new User(usernameCreate.getText(),passwordCreate.getText(),birthCreate.getValue(),firstCreate.getText(),lastCreate.getText(),cityCreate.getText(),countryCreate.getText()));
+            model.createUser(new User(usernameCreate.getText(), passwordCreate.getText(), birthCreate.getValue(), firstCreate.getText(), lastCreate.getText(), cityCreate.getText(), countryCreate.getText()));
             Massage.infoMassage("User creation was made successfully!");
             event.consume();
             return true;
@@ -313,42 +419,41 @@ public class ViewController implements Initializable,Observer {
     }
 
     private boolean createEmpty() {
-        if(usernameCreate.getText().isEmpty() || passwordCreate.getText().isEmpty() || firstCreate.getText().isEmpty() || lastCreate.getText().isEmpty() || birthCreate.getValue()==null || birthCreate.getValue().toString().isEmpty() || cityCreate.getText().isEmpty() || countryCreate.getText().isEmpty())
-            return true;
-        else
-            return false;
-    }
-    private boolean updateEmpty() {
-        if(usernameUpdate.getText().isEmpty() || passwordUpdate.getText().isEmpty() || firstUpdate.getText().isEmpty() || lastUpdate.getText().isEmpty() || birthUpdate.getValue()==null || birthUpdate.getValue().toString().isEmpty() || cityUpdate.getText().isEmpty() || countryUpdate.getText().isEmpty())
+        if (usernameCreate.getText().isEmpty() || passwordCreate.getText().isEmpty() || firstCreate.getText().isEmpty() || lastCreate.getText().isEmpty() || birthCreate.getValue() == null || birthCreate.getValue().toString().isEmpty() || cityCreate.getText().isEmpty() || countryCreate.getText().isEmpty())
             return true;
         else
             return false;
     }
 
-    public void submit(ActionEvent event){
-        signIn(event,usernameSign.getText(),passwordSign.getText());
+    private boolean updateEmpty() {
+        if (usernameUpdate.getText().isEmpty() || passwordUpdate.getText().isEmpty() || firstUpdate.getText().isEmpty() || lastUpdate.getText().isEmpty() || birthUpdate.getValue() == null || birthUpdate.getValue().toString().isEmpty() || cityUpdate.getText().isEmpty() || countryUpdate.getText().isEmpty())
+            return true;
+        else
+            return false;
+    }
+
+    public void submit(ActionEvent event) {
+        signIn(event, usernameSign.getText(), passwordSign.getText());
     }
 
     private void signIn(ActionEvent event, String username, String password) {
-        if(model.userExist(username)==false){
+        if (model.userExist(username) == false) {
             Massage.errorMassage("Username is incorrect");
             event.consume();
-        }
-        else if(model.UsersTable_checkPassword(username,password)==false){
+        } else if (model.UsersTable_checkPassword(username, password) == false) {
             Massage.errorMassage("Username or Password are incorrect");
             event.consume();
-        }
-        else{
-            this.username=username;
+        } else {
+            this.username = username;
             tabSignIn();
             updateHome(username);
             fillUpdate(username);
-            loggedIn=true;
+            loggedIn = true;
         }
     }
 
     private void fillUpdate(String username) {
-        User user=model.getUser(username);
+        User user = model.getUser(username);
         usernameUpdate.setText(user.getUsername());
         passwordUpdate.setText(user.getPassword());
         confirmUpdate.setText(user.getPassword());
@@ -360,16 +465,16 @@ public class ViewController implements Initializable,Observer {
     }
 
 
-    public void signOut(ActionEvent event){
-        if(Massage.confirmMassage("Are you sure you want to sign-out?")){
+    public void signOut(ActionEvent event) {
+        if (Massage.confirmMassage("Are you sure you want to sign-out?")) {
             tabSignOut();
-            loggedIn=false;
+            loggedIn = false;
         }
         event.consume();
     }
 
-    public void delete(ActionEvent event){
-        if(Massage.confirmMassage("Are you sure you want to delete your account?")){
+    public void delete(ActionEvent event) {
+        if (Massage.confirmMassage("Are you sure you want to delete your account?")) {
             Massage.infoMassage("Your account was deleted successfully!");
             model.deleteUser(username);
             tabSignOut();
@@ -377,16 +482,15 @@ public class ViewController implements Initializable,Observer {
         event.consume();
     }
 
-    public void show(ActionEvent event){
-        if(model.userExist(usernameRead.getText())==true){
-            User user=model.getUser(username);
+    public void show(ActionEvent event) {
+        if (model.userExist(usernameRead.getText()) == true) {
+            User user = model.getUser(username);
             firstRead.setText(user.getFirst_Name());
             lastRead.setText(user.getLast_Name());
             birthRead.setText(localDate2Str(user.getBirth_Date()));
             cityRead.setText(user.getCity());
             countryRead.setText(user.getCountry());
-        }
-        else {
+        } else {
             Massage.errorMassage("Username is incorrect");
             event.consume();
         }
@@ -394,64 +498,58 @@ public class ViewController implements Initializable,Observer {
 
     private String localDate2Str(LocalDate birth_date) {
         String str;
-        str=birth_date.getDayOfMonth()+"-"+birth_date.getMonthValue()+"-"+birth_date.getYear();
+        str = birth_date.getDayOfMonth() + "-" + birth_date.getMonthValue() + "-" + birth_date.getYear();
         return str;
     }
 
-    public void update(ActionEvent event){
-        if(updateEmpty()==true){
+    public void update(ActionEvent event) {
+        if (updateEmpty() == true) {
             Massage.infoMassage("Please fill all the fields");
             event.consume();
-        }
-        else if(model.userExist(usernameUpdate.getText())==true && usernameUpdate.getText().equals(this.username)==false){
+        } else if (model.userExist(usernameUpdate.getText()) == true && usernameUpdate.getText().equals(this.username) == false) {
             Massage.errorMassage("Username already taken");
             event.consume();
-        }
-        else if(passwordUpdate.getText().equals(confirmUpdate.getText())==false){
+        } else if (passwordUpdate.getText().equals(confirmUpdate.getText()) == false) {
             Massage.errorMassage("Password must be match in both options");
             event.consume();
-        }
-        else if(dateCheck(birthUpdate.getValue())==false){
+        } else if (dateCheck(birthUpdate.getValue()) == false) {
             Massage.errorMassage("Age must be at least 18");
             event.consume();
-        }
-        else if(Massage.confirmMassage("Are you sure you want to update the details?")){
-            model.updateUserInfo(username,new User(usernameUpdate.getText(),passwordUpdate.getText(),birthUpdate.getValue(),firstUpdate.getText(),lastUpdate.getText(),cityUpdate.getText(),countryUpdate.getText()));
-            if(usernameRead.getText().equals(this.username)==true){
+        } else if (Massage.confirmMassage("Are you sure you want to update the details?")) {
+            model.updateUserInfo(username, new User(usernameUpdate.getText(), passwordUpdate.getText(), birthUpdate.getValue(), firstUpdate.getText(), lastUpdate.getText(), cityUpdate.getText(), countryUpdate.getText()));
+            if (usernameRead.getText().equals(this.username) == true) {
                 clearRead();
             }
-            username=usernameUpdate.getText();
+            username = usernameUpdate.getText();
             updateHome(username);
             Massage.infoMassage("The update was made successfully!");
         }
         event.consume();
     }
 
-    public void baggagePublishClick(Event event){
-        if(baggagePublish.isSelected()==false){
+    public void baggagePublishClick(Event event) {
+        if (baggagePublish.isSelected() == false) {
             baggageLimitPublish.setText("0");
             baggageLimitPublish.setDisable(true);
-        }
-        else{
+        } else {
             baggageLimitPublish.setDisable(false);
             baggageLimitPublish.setText("");
         }
     }
 
-    public void hospitalityPublishClick(Event event){
-        if(hospitalityPublish.isSelected()==false){
+    public void hospitalityPublishClick(Event event) {
+        if (hospitalityPublish.isSelected() == false) {
             hospitalityRankPublish.setText("0");
             hospitalityRankPublish.setDisable(true);
-        }
-        else{
+        } else {
             hospitalityRankPublish.setDisable(false);
             hospitalityRankPublish.setText("");
         }
     }
 
-    public void partTicketsPublishClick(Event event){
-        if(partTicketsPublish.isSelected()){
-            if((isTicketsMore1())==false){
+    public void partTicketsPublishClick(Event event) {
+        if (partTicketsPublish.isSelected()) {
+            if ((isTicketsMore1()) == false) {
                 Massage.errorMassage("You can allow this only if you sell more than 1 ticket");
                 partTicketsPublish.setSelected(false);
             }
@@ -460,22 +558,20 @@ public class ViewController implements Initializable,Observer {
 
     private boolean isTicketsMore1() {
         try {
-            int num=Integer.parseInt(ticketsNumPublish.getText());
-            return (num>1);
-        }
-        catch (Exception e){
+            int num = Integer.parseInt(ticketsNumPublish.getText());
+            return (num > 1);
+        } catch (Exception e) {
             return false;
         }
     }
 
-    public void publishPublish(Event event){
-        if(isPublishPorblem()==false){
-            if(model.publishVacation(new Vacation(username,fromDatePublish.getValue(),toDatePublish.getValue(),Integer.parseInt(pricePublish.getText()),Integer.parseInt(ticketsNumPublish.getText()),partTicketsPublish.isSelected(),sourcePublish.getText(),destinationPublish.getText(),baggagePublish.isSelected(),Integer.parseInt(baggageLimitPublish.getText()),ticketsClassPublish.getValue(),flights,flightTypePublish.getValue(),vacationTypePublish.getValue(),hospitalityPublish.isSelected(),Integer.parseInt(hospitalityRankPublish.getText())))==true){
+    public void publishPublish(Event event) {
+        if (isPublishPorblem() == false) {
+            if (model.publishVacation(new Vacation(username, fromDatePublish.getValue(), toDatePublish.getValue(), Integer.parseInt(pricePublish.getText()), Integer.parseInt(ticketsNumPublish.getText()), partTicketsPublish.isSelected(), sourcePublish.getText(), destinationPublish.getText(), baggagePublish.isSelected(), Integer.parseInt(baggageLimitPublish.getText()), ticketsClassPublish.getValue(), flights, flightTypePublish.getValue(), vacationTypePublish.getValue(), hospitalityPublish.isSelected(), Integer.parseInt(hospitalityRankPublish.getText()))) == true) {
                 Massage.infoMassage("Vacation sell published successfully");
-                flights=new ArrayList<>();
+                flights = new ArrayList<>();
                 clearPublish();
-            }
-            else
+            } else
                 Massage.infoMassage("Vacation sell publish has failed");
         }
     }
@@ -499,7 +595,7 @@ public class ViewController implements Initializable,Observer {
     }
 
     private boolean isPublishPorblem() {
-        if (toDatePublish.getValue() == null || fromDatePublish.getValue() == null || sourcePublish.getText().isEmpty() || destinationPublish.getText().isEmpty() || ticketsNumPublish.getText().isEmpty() || pricePublish.getText().isEmpty() || ticketsClassPublish.getValue() == null || vacationTypePublish.getValue() == null || flightTypePublish.getValue() == null){
+        if (toDatePublish.getValue() == null || fromDatePublish.getValue() == null || sourcePublish.getText().isEmpty() || destinationPublish.getText().isEmpty() || ticketsNumPublish.getText().isEmpty() || pricePublish.getText().isEmpty() || ticketsClassPublish.getValue() == null || vacationTypePublish.getValue() == null || flightTypePublish.getValue() == null) {
             Massage.errorMassage("Please fill all the fields as needed");
             return true;
         }
@@ -521,56 +617,55 @@ public class ViewController implements Initializable,Observer {
                 return true;
             }
         }
-        if(fromDatePublish.getValue().isAfter(toDatePublish.getValue())){
+        if (fromDatePublish.getValue().isAfter(toDatePublish.getValue())) {
             Massage.errorMassage("From time must be before To time");
             return true;
         }
-        if(isNumber(pricePublish.getText())==false){
+        if (isNumber(pricePublish.getText()) == false) {
             Massage.errorMassage("Price must be a positive integer");
             return true;
         }
-        if(isNumber(ticketsNumPublish.getText())==false){
+        if (isNumber(ticketsNumPublish.getText()) == false) {
             Massage.errorMassage("Number of tickets must be a positive integer");
             return true;
         }
-        if(flights.size()==0){
+        if (flights.size() == 0) {
             Massage.errorMassage("Number of listed flights must be at least 1");
             return true;
         }
         return false;
     }
 
-    private boolean isNumber(String str){
+    private boolean isNumber(String str) {
         try {
             Integer.parseInt(str);
             return true;
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             return false;
         }
     }
-    public void flightListPublish(Event event){
-        try{
+
+    public void flightListPublish(Event event) {
+        try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../View/FlightsList.fxml"));
             Parent root1 = (Parent) fxmlLoader.load();
-            FlightsListController viewController =fxmlLoader.getController();
+            FlightsListController viewController = fxmlLoader.getController();
             viewController.addObserver(this);
             viewController.setFlights(flights);
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.initStyle(StageStyle.UNDECORATED);
             stage.setTitle("Flight list");
-            stage.setScene(new Scene(root1,1400,400));
+            stage.setScene(new Scene(root1, 1400, 400));
             stage.initModality(Modality.APPLICATION_MODAL); //Lock the window until it closes
             stage.show();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private void updateHome(String username) {
-        User user=model.getUser(username);
+        User user = model.getUser(username);
         usernameHome.setText(username);
         firstHome.setText(user.getFirst_Name());
         lastHome.setText(user.getLast_Name());
@@ -579,16 +674,16 @@ public class ViewController implements Initializable,Observer {
         countryHome.setText(user.getCountry());
     }
 
-    private boolean dateCheck(LocalDate date){
-        LocalDate today=LocalDate.now().plusDays(1);
-        LocalDate before18=today.minusYears(18);
+    private boolean dateCheck(LocalDate date) {
+        LocalDate today = LocalDate.now().plusDays(1);
+        LocalDate before18 = today.minusYears(18);
         return (date.isBefore(before18));
     }
 
     @Override
     public void update(Observable o, Object arg) {
-        flights=((ArrayList<Flight>) arg);
-        flightListBut.setText("Flights list ("+flights.size()+")");
+        flights = ((ArrayList<Flight>) arg);
+        flightListBut.setText("Flights list (" + flights.size() + ")");
     }
 
     public void cleanFilters(ActionEvent actionEvent) {
@@ -597,6 +692,90 @@ public class ViewController implements Initializable,Observer {
                 ((TextField) node).clear();
         }
     }
+
+
+    private TableView<Flight> getRequestsTableView(TableView tableView, Callback<TableColumn<PurchaseRequest, String>, TableCell<PurchaseRequest, String>> cellFactory) {
+        tableView = (TableView<PurchaseRequest>) tableView;
+        tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+
+        TableColumn<PurchaseRequest, String> seller_username = new TableColumn<>("Seller username");
+        TableColumn<PurchaseRequest, String> sourceCountry = new TableColumn<>("Source country");
+        TableColumn<PurchaseRequest, String> destinationCountry = new TableColumn<>("Destination country");
+        TableColumn<PurchaseRequest, String> ticketsType = new TableColumn<>("Tickets type");
+        TableColumn<PurchaseRequest, String> flight_Type = new TableColumn<>("Flight type");
+        TableColumn<PurchaseRequest, Number> max_Price_Per_Ticket = new TableColumn<>("Max price per ticket");
+        TableColumn<PurchaseRequest, Number> tickets_Quantity = new TableColumn<>("Tickets quantity");
+        TableColumn<PurchaseRequest, String> canBuyLess = new TableColumn<>("Can buy less");
+        TableColumn<PurchaseRequest, String> baggage_Included = new TableColumn<>("baggage included");
+        TableColumn<PurchaseRequest, Number> baggageLimit = new TableColumn<>("Baggage limit");
+        TableColumn<PurchaseRequest, String> hospitality_Included = new TableColumn<>("");
+        TableColumn<PurchaseRequest, Number> hospitality_Rank = new TableColumn<>("Hospitality included");
+        TableColumn<PurchaseRequest, String> vacation_type = new TableColumn<>("Vacation type");
+
+        seller_username.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getVacationSell().getVacation().getSeller_username()));
+        sourceCountry.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getVacationSell().getVacation().getSourceCountry()));
+        destinationCountry.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getVacationSell().getVacation().getDestinationCountry()));
+        ticketsType.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getVacationSell().getVacation().getTicketsType().toString()));
+        flight_Type.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getVacationSell().getVacation().getFlight_Type().toString()));
+        max_Price_Per_Ticket.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getVacationSell().getVacation().getPrice_Per_Ticket()));
+        tickets_Quantity.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getVacationSell().getVacation().getTickets_Quantity()));
+        canBuyLess.setCellValueFactory(param -> new SimpleObjectProperty<>(String.valueOf(param.getValue().getVacationSell().getVacation().isCanBuyLess())));
+        baggage_Included.setCellValueFactory(param -> new SimpleObjectProperty<>(String.valueOf(param.getValue().getVacationSell().getVacation().isBaggage_Included())));
+        baggageLimit.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getVacationSell().getVacation().getBaggageLimit()));
+        hospitality_Included.setCellValueFactory(param -> new SimpleObjectProperty<>(String.valueOf(param.getValue().getVacationSell().getVacation().isHospitality_Included())));
+        hospitality_Rank.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getVacationSell().getVacation().getHospitality_Rank()));
+        vacation_type.setCellValueFactory(param -> new SimpleObjectProperty<>(String.valueOf(param.getValue().getVacationSell().getVacation().getVacation_type())));
+
+        TableColumn<PurchaseRequest, String> requset_buttons = new TableColumn<>();//Button
+
+//        Callback<TableColumn<VacationSell, String>, TableCell<VacationSell, String>> cellFactory
+//                = //
+//                new Callback<TableColumn<VacationSell, String>, TableCell<VacationSell, String>>() {
+//                    @Override
+//                    public TableCell<VacationSell, String> call(final TableColumn<VacationSell, String> param) {
+//                        final TableCell<VacationSell, String> cell = new TableCell<VacationSell, String>() {
+//
+//                            final Button btn = new Button(buttonName);
+//
+//                            @Override
+//                            public void updateItem(String item, boolean empty) {
+//                                super.updateItem(item, empty);
+//                                if (empty) {
+//                                    setGraphic(null);
+//                                    setText(null);
+//                                } else {
+//                                    btn.setOnAction(event -> {
+////                                        VacationSell vacationSell = getTableView().getItems().get(getIndex());
+////                                        Stage stage = new Stage();
+//////                    stage.getIcons().add(new Image(this.getClass().getResourceAsStream("icon.png")));
+////                                        stage.setAlwaysOnTop(true);
+////                                        stage.setResizable(false);
+////                                        stage.setTitle("vacation " + vacationSell.getId() + " flights");
+////                                        stage.initModality(Modality.APPLICATION_MODAL);
+////                                        ScrollPane scrollPane = new ScrollPane();
+////                                        TableView<Flight> flightsTableView = getFlightsTableView();
+////                                        flightsTableView.getItems().addAll(vacationSell.getVacation().getFlights());
+////                                        scrollPane.setContent(flightsTableView);
+////                                        flightsTableView.setPrefHeight(600);
+////                                        Scene scene = new Scene(scrollPane, flightsTableView.getMinWidth(), flightsTableView.getPrefHeight());
+////                                        stage.setScene(scene);
+////                                        stage.show();
+//                                    });
+//                                    setGraphic(btn);
+//                                    setText(null);
+//                                }
+//                            }
+//                        };
+//                        return cell;
+//                    }
+//                };
+
+        requset_buttons.setCellFactory(cellFactory);
+        tableView.getColumns().addAll(seller_username, sourceCountry, destinationCountry, ticketsType, flight_Type, max_Price_Per_Ticket, tickets_Quantity, canBuyLess, baggage_Included, baggageLimit, hospitality_Included, hospitality_Rank, vacation_type, requset_buttons);
+        return tableView;
+    }
+
 
     private TableView<Flight> getFlightsTableView() {
         TableView<Flight> flightTableView = new TableView<>();
@@ -656,6 +835,7 @@ public class ViewController implements Initializable,Observer {
 //        vacation_type.setCellValueFactory(new PropertyValueFactory<>("vacation_type"));
 
 //        seller_username.set
+        seller_username.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getVacation().getSeller_username()));
         sourceCountry.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getVacation().getSourceCountry()));
         destinationCountry.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getVacation().getDestinationCountry()));
         ticketsType.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getVacation().getTicketsType().toString()));
@@ -663,7 +843,7 @@ public class ViewController implements Initializable,Observer {
         max_Price_Per_Ticket.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getVacation().getPrice_Per_Ticket()));
         tickets_Quantity.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getVacation().getTickets_Quantity()));
         canBuyLess.setCellValueFactory(param -> new SimpleObjectProperty<>(String.valueOf(param.getValue().getVacation().isCanBuyLess())));
-        baggage_Included.setCellValueFactory(param -> new SimpleObjectProperty<>(String.valueOf(param.getValue().getVacation().isBaggage())));
+        baggage_Included.setCellValueFactory(param -> new SimpleObjectProperty<>(String.valueOf(param.getValue().getVacation().isBaggage_Included())));
         baggageLimit.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getVacation().getBaggageLimit()));
         hospitality_Included.setCellValueFactory(param -> new SimpleObjectProperty<>(String.valueOf(param.getValue().getVacation().isHospitality_Included())));
         hospitality_Rank.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getVacation().getHospitality_Rank()));
@@ -751,18 +931,24 @@ public class ViewController implements Initializable,Observer {
 
         vacations.getColumns().addAll(seller_username, sourceCountry, destinationCountry, ticketsType, flight_Type, max_Price_Per_Ticket, tickets_Quantity, canBuyLess, baggage_Included, baggageLimit, hospitality_Included, hospitality_Rank, vacation_type, seeMore_buttons, requset_buttons);
 
-        List<VacationSell> vacationSells =model.getVacations(textField_flightCompany.getText(),
-                datePicker_fromDate.getValue(),
-                datePicker_toDate.getValue(),
-                checkBox_baggage.isSelected(),
-                checkBox_baggage.isSelected() ? Integer.parseInt(textField_baggage.getText()) : null,
-                Integer.parseInt(textField_ticketsQuantity.getText()),
-                Vacation.Tickets_Type.valueOf(textField_ticketsType.getText()),
-                Integer.parseInt(textField_maxPricePerTicket.getText()),
-                textField_sourceCountry.getText(), textField_destinationCountry.getText(),
-                Vacation.Vacation_Type.valueOf(comboBox_vacationType.getSelectionModel().getSelectedItem().toString()),
-                checkBox_hospitality.isSelected(),
-                checkBox_hospitality.isSelected() ? Integer.parseInt(textField_hospitality.getText()):null);;
+//        List<VacationSell> vacationSells = model.getVacations(
+//                textField_flightCompany.getText(),
+//                datePicker_fromDate.getValue(),
+//                datePicker_toDate.getValue(),
+//                checkBox_baggage.isSelected(),
+//                checkBox_baggage.isSelected() ? Integer.parseInt(textField_baggage.getText()) : null,
+//                textField_ticketsQuantity.getText().equals("") ? null : Integer.parseInt(textField_ticketsQuantity.getText()),
+//                comboBox_ticketsType.getSelectionModel().getSelectedItem() == null ? null : Vacation.Tickets_Type.valueOf(comboBox_ticketsType.getSelectionModel().getSelectedItem().toString()),
+//                textField_maxPricePerTicket.getText().equals("") ? null : Integer.parseInt(textField_maxPricePerTicket.getText()),
+//                textField_sourceCountry.getText().equals("") ? null : textField_sourceCountry.getText(),
+//                textField_destinationCountry.getText().equals("") ? null : textField_destinationCountry.getText(),
+//                comboBox_vacationType.getSelectionModel().getSelectedItem() == null ? null : Vacation.Vacation_Type.valueOf(comboBox_vacationType.getSelectionModel().getSelectedItem().toString()),
+//                checkBox_hospitality.isSelected(),
+//                checkBox_hospitality.isSelected() ? Integer.parseInt(textField_hospitality.getText()) : null);
+
+
+        List<VacationSell> vacationSells = model.getVacations();
+        //add comboBox_flightType.getSelectionModel().getSelectedItem() == null ? null : Vacation.Flight_Type.valueOf(comboBox_flightType.getSelectionModel().getSelectedItem().toString()),
         vacations.getItems().addAll(vacationSells);
         Stage stage = new Stage();
         stage.setAlwaysOnTop(true);
