@@ -179,6 +179,8 @@ public class ViewController implements Initializable, Observer {
                                         try {
                                             fxmlLoader = new FXMLLoader(getClass().getResource("../View/PaymentWindow.fxml"));
                                             root = fxmlLoader.load();
+                                            PaymentWindowController controller=fxmlLoader.getController();
+                                            controller.setData(model,getTableView().getItems().get(getIndex()).getId());
                                         } catch (IOException e) {
                                             e.printStackTrace();
 //                                            showAlert("Exception!");
@@ -692,8 +694,10 @@ public class ViewController implements Initializable, Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-        flights = ((ArrayList<Flight>) arg);
-        flightListBut.setText("Flights list (" + flights.size() + ")");
+        if(o instanceof FlightsListController){
+            flights = ((ArrayList<Flight>) arg);
+            flightListBut.setText("Flights list (" + flights.size() + ")");
+        }
     }
 
     public void cleanFilters(ActionEvent actionEvent) {
