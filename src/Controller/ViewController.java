@@ -141,6 +141,7 @@ public class ViewController implements Initializable,Observer {
         flightTypePublish.getItems().addAll(Vacation.Flight_Type.values());
         ticketsClassPublish.getItems().addAll(Vacation.Tickets_Type.values());
         setTabsClosable(false);
+        //searchTab
         tabSearchInit();
     }
 
@@ -560,7 +561,7 @@ public class ViewController implements Initializable,Observer {
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.initStyle(StageStyle.UNDECORATED);
             stage.setTitle("Flight list");
-            stage.setScene(new Scene(root1,1400,400));
+            stage.setScene(new Scene(root1));
             stage.initModality(Modality.APPLICATION_MODAL); //Lock the window until it closes
             stage.show();
         }

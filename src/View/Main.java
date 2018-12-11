@@ -21,7 +21,7 @@ public class Main extends Application {
         Model model=new Model("Vaction4U");
         viewController.setModel(model);
         primaryStage.setTitle("Vaction4U");
-        primaryStage.setScene(new Scene(root, 600, 400));
+        primaryStage.setScene(new Scene(root));
         primaryStage.show();
     }
 

@@ -42,7 +42,7 @@ public class FlightsListController extends Observable implements Observer, Initi
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.initStyle(StageStyle.UNDECORATED);
             stage.setTitle("Add flight");
-            stage.setScene(new Scene(root1,600,400));
+            stage.setScene(new Scene(root1));
             stage.initModality(Modality.APPLICATION_MODAL); //Lock the window until it closes
             stage.show();
         }
