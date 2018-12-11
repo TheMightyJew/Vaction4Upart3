@@ -207,6 +207,7 @@ public class ViewController implements Initializable, Observer {
                     }
                 };
         tableView_myRequests = getRequestsTableView(tableView_myRequests, cellFactory1);
+
         Callback<TableColumn<PurchaseRequest, String>, TableCell<PurchaseRequest, String>> cellFactory2
                 = //
                 new Callback<TableColumn<PurchaseRequest, String>, TableCell<PurchaseRequest, String>>() {
