@@ -571,21 +571,30 @@ public class ViewController implements Initializable, Observer {
         if (isPublishPorblem() == false) {
             if (model.publishVacation(new Vacation(username, fromDatePublish.getValue(), toDatePublish.getValue(), Integer.parseInt(pricePublish.getText()), Integer.parseInt(ticketsNumPublish.getText()), partTicketsPublish.isSelected(), sourcePublish.getText(), destinationPublish.getText(), baggagePublish.isSelected(), Integer.parseInt(baggageLimitPublish.getText()), ticketsClassPublish.getValue(), flights, flightTypePublish.getValue(), vacationTypePublish.getValue(), hospitalityPublish.isSelected(), Integer.parseInt(hospitalityRankPublish.getText()))) == true) {
                 Massage.infoMassage("Vacation sell published successfully");
-                flights = new ArrayList<>();
                 clearPublish();
             } else
                 Massage.infoMassage("Vacation sell publish has failed");
         }
     }
 
+    public void reserPublish(ActionEvent event){
+        if(Massage.confirmMassage("Are you sure you want to reset these details?")){
+            clearPublish();
+        }
+    }
+
     private void clearPublish() {
+        flights = new ArrayList<>();
+        flightListBut.setText("Flights list (0)");
         toDatePublish.setValue(null);
         fromDatePublish.setValue(null);
         sourcePublish.setText("");
         destinationPublish.setText("");
         ticketsNumPublish.setText("");
-        hospitalityRankPublish.setText("");
-        baggageLimitPublish.setText("");
+        hospitalityRankPublish.setText("0");
+        hospitalityRankPublish.setDisable(true);
+        baggageLimitPublish.setText("0");
+        baggageLimitPublish.setDisable(true);
         baggagePublish.setSelected(false);
         hospitalityPublish.setSelected(false);
         partTicketsPublish.setSelected(false);
@@ -605,7 +614,7 @@ public class ViewController implements Initializable, Observer {
             if (baggageLimitPublish.getText().isEmpty()) {
                 Massage.errorMassage("Please fill all the fields as needed");
                 return true;
-            } else if (isNumber(baggageLimitPublish.getText())) {
+            } else if (isNumber(baggageLimitPublish.getText())==false) {
                 Massage.errorMassage("Baggage limit must be a positive integer");
                 return true;
             }
@@ -631,7 +640,7 @@ public class ViewController implements Initializable, Observer {
             Massage.errorMassage("Number of tickets must be a positive integer");
             return true;
         }
-        if (flights.size() == 0) {
+        if (flightTypePublish==null || flights.size() == 0) {
             Massage.errorMassage("Number of listed flights must be at least 1");
             return true;
         }
@@ -711,8 +720,8 @@ public class ViewController implements Initializable, Observer {
         TableColumn<PurchaseRequest, String> canBuyLess = new TableColumn<>("Can buy less");
         TableColumn<PurchaseRequest, String> baggage_Included = new TableColumn<>("baggage included");
         TableColumn<PurchaseRequest, Number> baggageLimit = new TableColumn<>("Baggage limit");
-        TableColumn<PurchaseRequest, String> hospitality_Included = new TableColumn<>("");
-        TableColumn<PurchaseRequest, Number> hospitality_Rank = new TableColumn<>("Hospitality included");
+        TableColumn<PurchaseRequest, String> hospitality_Included = new TableColumn<>("Hospitality included");
+        TableColumn<PurchaseRequest, Number> hospitality_Rank = new TableColumn<>("Hospitality rank");
         TableColumn<PurchaseRequest, String> vacation_type = new TableColumn<>("Vacation type");
 
         seller_username.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getVacationSell().getVacation().getSeller_username()));
