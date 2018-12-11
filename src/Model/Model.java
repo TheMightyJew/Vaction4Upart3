@@ -36,7 +36,7 @@ public class Model implements IModel {
     public enum PaypalPaymentfieldsEnum {PaymentID, email, password;}
 
 
-    public enum tableNameEnum {Users_table, Vacations_Table, Purchases_Table, Flights_table, FlightsToVacations_Table, PurchaseRequests_Table, Payments_Table, VisaPayment_Table, Paypalpayment_Table;}
+    public enum tableNameEnum {Users_table, Vacations_Table, Purchases_Table, Flights_table, FlightsToVacations_Table, PurchaseRequests_Table, Payments_Table, VisaPayments_Table, Paypalpayments_Table;}
 
     //constructor
     public Model(String databaseName) {
@@ -524,11 +524,18 @@ public class Model implements IModel {
     }
 
     @Override
-    public List<VacationSell> getVacations(String flightCompany, LocalDate fromDate, LocalDate toDate, boolean baggage, Integer baggageMin, Integer ticketsNum, Vacation.Tickets_Type tickets_type, Integer maxPricePerTicket, String sourceCountry, String destCountry, Vacation.Vacation_Type vacation_type, Vacation.Flight_Type flight_type, boolean hospitalityIncluded, Integer minHospitalityRank) {
+    public List<VacationSell> getVacations(String username, String flightCompany, LocalDate fromDate, LocalDate toDate, boolean baggage, Integer baggageMin, Integer ticketsNum, Vacation.Tickets_Type tickets_type, Integer maxPricePerTicket, String sourceCountry, String destCountry, Vacation.Vacation_Type vacation_type, Vacation.Flight_Type flight_type, boolean hospitalityIncluded, Integer minHospitalityRank) {
         String sql = "SELECT Vacations_Table.Vacation_id,Vacations_Table.Publisher_Username,Vacations_Table.Price_Per_ticket,Vacations_Table.Num_Of_Passengers,Vacations_Table.Can_Buy_less_Tickets,Vacations_Table.Source_Country,Vacations_Table.Destination_Country,Vacations_Table.From_Date,Vacations_Table.To_Date,Vacations_Table.Baggage_Limit,Vacations_Table.Tickets_Type,Vacations_Table.Flight_Type,Vacations_Table.Vacation_Type,Vacations_Table.Lodging_Included,Vacations_Table.Lodging_Rating,Vacations_Table.Vacation_Status,Flights_table.FlightComapny,Flights_table.DepartureDate,Flights_table.DepartureTime,Flights_table.ArrivalDate,Flights_table.ArrivalTime,Flights_table.OriginAirport,Flights_table.DestinationAirport\n" +
-                "FROM ((FlightsToVacations_Table \n" +
+                "FROM (((FlightsToVacations_Table \n" +
                 "INNER JOIN Vacations_Table ON FlightsToVacations_Table.Vacation_id = Vacations_Table.Vacation_id)\n" +
                 "INNER JOIN Flights_table ON Flights_table.FlightID = FlightsToVacations_Table.Flight_id)\n" +
+                "INNER JOIN(" +
+                "select Vacations_Table.Vacation_id\n" +
+                "from Vacations_Table\n"+
+                "EXCEPT\n"+
+                "SELECT Vacations_Table.Vacation_id\n" +
+                "FROM PurchaseRequests_Table,Vacations_Table\n"+
+                "WHERE "+ PurchaseRequestsfieldNameEnum.Requester_Username.name()+"='"+username+"'))\n"+
                 "ORDER BY Vacations_Table.Vacation_id ASC;";
         List<VacationSell> optinalVacation = new ArrayList<>();
         List<VacationSell> ans = new ArrayList<>();
@@ -569,6 +576,28 @@ public class Model implements IModel {
             optinalVacation.add(vacationSell);
         }
 
+        String sql1 = "SELECT PurchaseRequests_Table.Vacation_id\n" +
+                "FROM PurchaseRequests_Table\n" +
+                "WHERE "+ PurchaseRequestsfieldNameEnum.Requester_Username.name()+"<>'"+username+"';";
+        List<String[]> userRequests = new ArrayList<>();
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql1)) {
+
+            ResultSet rs = pstmt.executeQuery();
+            // loop through the result set
+            int nCol = rs.getMetaData().getColumnCount();
+            while (rs.next()) {
+                String[] row = new String[nCol];
+                for (int iCol = 1; iCol <= nCol; iCol++) {
+                    Object obj = rs.getObject(iCol);
+                    row[iCol - 1] = (obj == null) ? null : obj.toString();
+                }
+                userRequests.add(row);
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
         for (int i = 0; i < optinalVacation.size(); i++) {
             VacationSell vacationSell = optinalVacation.get(i);
             Vacation vacation = vacationSell.getVacation();
@@ -587,32 +616,25 @@ public class Model implements IModel {
                 if (!(vacation.isBaggage_Included() && vacation.getBaggageLimit() >= baggageMin))
                     continue;
             }
-            if (!baggage) {
-                if (vacation.isBaggage_Included())
-                    continue;
-            }
-            if (!(vacation.getTickets_Quantity() == ticketsNum || (vacation.isCanBuyLess() && vacation.getTickets_Quantity() >= ticketsNum) || tickets_type == null))
+            if (!(tickets_type == null || vacation.getTickets_Quantity() == ticketsNum || (vacation.isCanBuyLess() && vacation.getTickets_Quantity() >= ticketsNum)))
                 continue;
-            if (!(tickets_type == null||vacation.getTicketsType().name().equals(tickets_type.name()) ))
+            if (!(tickets_type == null || vacation.getTicketsType().name().equals(tickets_type.name())))
                 continue;
-            if (!(flight_type == null||vacation.getFlight_Type().name().equals(flight_type.name())))
+            if (!(flight_type == null || vacation.getFlight_Type().name().equals(flight_type.name())))
                 continue;
-            if (!(maxPricePerTicket == null||vacation.getPrice_Per_Ticket() <= maxPricePerTicket))
+            if (!(maxPricePerTicket == null || vacation.getPrice_Per_Ticket() <= maxPricePerTicket))
                 continue;
             if (!(sourceCountry == null || sourceCountry.equalsIgnoreCase(vacation.getSourceCountry())))
                 continue;
             if (!(destCountry == null || destCountry.equalsIgnoreCase(vacation.getDestinationCountry())))
                 continue;
-            if (!(vacation_type == null||vacation.getVacation_type().name().equals(vacation_type.name()) ))
+            if (!(vacation_type == null || vacation.getVacation_type().name().equals(vacation_type.name())))
                 continue;
             if (hospitalityIncluded) {
                 if (!(vacation.isHospitality_Included() && vacation.getHospitality_Rank() >= minHospitalityRank))
                     continue;
             }
-            if (!hospitalityIncluded) {
-                if (vacation.isHospitality_Included())
-                    continue;
-            }
+
             if (!vacationSell.getStatus().name().equals("available"))
                 continue;
             ans.add(vacationSell);
@@ -623,7 +645,7 @@ public class Model implements IModel {
     @Override
     public boolean sendRequest(Request request) {
         try {
-            String[] values = {null, request.getUsername(), "" + request.getVacationId(), "pending"};
+            String[] values = {null, request.getUsername(), "" + request.getVacationId(), PurchaseRequest.Request_Status.pending.name()};
             insertQuery(tableNameEnum.PurchaseRequests_Table.toString(), PurchaseRequestsfieldNameEnum.class, values);
             return true;
         } catch (Exception e) {
@@ -759,7 +781,7 @@ public class Model implements IModel {
             ppp = (PayaplPayment) payment;
             String[] newvalues = {PaymentID, ppp.getEmail(), ppp.getPassword()};
             try {
-                insertQuery(tableNameEnum.Paypalpayment_Table.toString(), PaypalPaymentfieldsEnum.class, newvalues);
+                insertQuery(tableNameEnum.Paypalpayments_Table.toString(), PaypalPaymentfieldsEnum.class, newvalues);
             } catch (SQLException e) {
                 e.printStackTrace();
                 return false;
@@ -770,7 +792,7 @@ public class Model implements IModel {
             vp = (VisaPayment) payment;
             String[] newvalues = {PaymentID, "" + vp.getCardNumber(), "" + vp.getThreeNumbers(), vp.getDate().toString(), vp.getOwnerId(), vp.getOwnerFirstName(), vp.getOwnerLastName()};
             try {
-                insertQuery(tableNameEnum.VisaPayment_Table.toString(), VisePaymentfieldsEnum.class, newvalues);
+                insertQuery(tableNameEnum.VisaPayments_Table.toString(), VisePaymentfieldsEnum.class, newvalues);
             } catch (SQLException e) {
                 e.printStackTrace();
                 return false;
@@ -782,6 +804,8 @@ public class Model implements IModel {
             vacationInfo[15] = VacationSell.Vacation_Status.sold.name();
             try {
                 updateQuery(tableNameEnum.Vacations_Table.name(), VacationsfieldNameEnum.class, vacationInfo, VacationsfieldNameEnum.Vacation_id + "='" + vacationId + "'");
+                requestInfo[3] = PurchaseRequest.Request_Status.done.name();
+                updateQuery(tableNameEnum.PurchaseRequests_Table.name(), PurchaseRequestsfieldNameEnum.class, requestInfo, PurchaseRequestsfieldNameEnum.PurchaseRequest_id.name() + "='" + requestId + "'");
             } catch (SQLException e) {
                 e.printStackTrace();
                 return false;

@@ -170,7 +170,7 @@ public class ViewController implements Initializable, Observer {
                                 } else {
                                     btn.setOnAction(event -> {
                                         Stage stage = new Stage();
-                                        stage.setAlwaysOnTop(true);
+                                        stage.setAlwaysOnTop(false);
                                         stage.setResizable(false);
                                         stage.setTitle("Payment Window");
 
@@ -728,7 +728,7 @@ public class ViewController implements Initializable, Observer {
             flights = ((ArrayList<Flight>) arg);
             flightListBut.setText("Flights list (" + flights.size() + ")");
         }
-        if(o instanceof PaymentWindowController){
+        if (o instanceof PaymentWindowController) {
             refreshRequests();
         }
     }
@@ -750,6 +750,8 @@ public class ViewController implements Initializable, Observer {
         TableColumn<PurchaseRequest, String> seller_username = new TableColumn<>("Seller username");
         TableColumn<PurchaseRequest, String> sourceCountry = new TableColumn<>("Source country");
         TableColumn<PurchaseRequest, String> destinationCountry = new TableColumn<>("Destination country");
+        TableColumn<PurchaseRequest, String> fromDate = new TableColumn<>("From date");
+        TableColumn<PurchaseRequest, String> toDate = new TableColumn<>("To date");
         TableColumn<PurchaseRequest, String> ticketsType = new TableColumn<>("Tickets type");
         TableColumn<PurchaseRequest, String> flight_Type = new TableColumn<>("Flight type");
         TableColumn<PurchaseRequest, Number> max_Price_Per_Ticket = new TableColumn<>("Max price per ticket");
@@ -766,6 +768,8 @@ public class ViewController implements Initializable, Observer {
         seller_username.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getVacationSell().getVacation().getSeller_username()));
         sourceCountry.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getVacationSell().getVacation().getSourceCountry()));
         destinationCountry.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getVacationSell().getVacation().getDestinationCountry()));
+        fromDate.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getVacationSell().getVacation().getFromDate().toString()));
+        toDate.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getVacationSell().getVacation().getToDate().toString()));
         ticketsType.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getVacationSell().getVacation().getTicketsType().toString()));
         flight_Type.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getVacationSell().getVacation().getFlight_Type().toString()));
         max_Price_Per_Ticket.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getVacationSell().getVacation().getPrice_Per_Ticket()));
@@ -777,13 +781,16 @@ public class ViewController implements Initializable, Observer {
         hospitality_Rank.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getVacationSell().getVacation().getHospitality_Rank()));
         vacation_type.setCellValueFactory(param -> new SimpleObjectProperty<>(String.valueOf(param.getValue().getVacationSell().getVacation().getVacation_type())));
 
+
+
+        tableView.getColumns().addAll(requester_username, seller_username, sourceCountry, destinationCountry,fromDate,toDate, ticketsType, flight_Type, max_Price_Per_Ticket, tickets_Quantity, canBuyLess, baggage_Included, baggageLimit, hospitality_Included, hospitality_Rank, vacation_type);
+
         for (Callback<TableColumn<PurchaseRequest, String>, TableCell<PurchaseRequest, String>> cellCallback : cellFactorys) {
             TableColumn<PurchaseRequest, String> column = new TableColumn<>();//Button
             column.setCellFactory(cellCallback);
             tableView.getColumns().add(column);
         }
 
-        tableView.getColumns().addAll(requester_username, seller_username, sourceCountry, destinationCountry, ticketsType, flight_Type, max_Price_Per_Ticket, tickets_Quantity, canBuyLess, baggage_Included, baggageLimit, hospitality_Included, hospitality_Rank, vacation_type);
         return tableView;
     }
 
@@ -820,6 +827,8 @@ public class ViewController implements Initializable, Observer {
         TableColumn<VacationSell, String> seller_username = new TableColumn<>("Seller username");
         TableColumn<VacationSell, String> sourceCountry = new TableColumn<>("Source country");
         TableColumn<VacationSell, String> destinationCountry = new TableColumn<>("Destination country");
+        TableColumn<VacationSell, String> fromDate = new TableColumn<>("From date");
+        TableColumn<VacationSell, String> toDate = new TableColumn<>("To date");
         TableColumn<VacationSell, String> ticketsType = new TableColumn<>("Tickets type");
         TableColumn<VacationSell, String> flight_Type = new TableColumn<>("Flight type");
         TableColumn<VacationSell, Number> max_Price_Per_Ticket = new TableColumn<>("Max price per ticket");
@@ -831,21 +840,8 @@ public class ViewController implements Initializable, Observer {
         TableColumn<VacationSell, Number> hospitality_Rank = new TableColumn<>("Hospitality Rank");
         TableColumn<VacationSell, String> vacation_type = new TableColumn<>("Vacation type");
 
-//        seller_username.setCellValueFactory(new PropertyValueFactory<>("seller_username"));
-//        sourceCountry.setCellValueFactory(new PropertyValueFactory<>("sourceCountry"));
-//        destinationCountry.setCellValueFactory(new PropertyValueFactory<>("destinationCountry"));
-//        ticketsType.setCellValueFactory(new PropertyValueFactory<>("ticketsType"));
-//        flight_Type.setCellValueFactory(new PropertyValueFactory<>("flight_Type"));
-//        max_Price_Per_Ticket.setCellValueFactory(new PropertyValueFactory<>("max_Price_Per_Ticket"));
-//        tickets_Quantity.setCellValueFactory(new PropertyValueFactory<>("tickets_Quantity"));
-//        canBuyLess.setCellValueFactory(new PropertyValueFactory<>("canBuyLess"));
-//        baggage_Included.setCellValueFactory(new PropertyValueFactory<>("baggage_Included"));
-//        baggageLimit.setCellValueFactory(new PropertyValueFactory<>("baggageLimit"));
-//        hospitality_Included.setCellValueFactory(new PropertyValueFactory<>("hospitality_Included"));
-//        hospitality_Rank.setCellValueFactory(new PropertyValueFactory<>("hospitality_Rank"));
-//        vacation_type.setCellValueFactory(new PropertyValueFactory<>("vacation_type"));
-
-//        seller_username.set
+        fromDate.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getVacation().getFromDate().toString()));
+        toDate.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getVacation().getToDate().toString()));
         seller_username.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getVacation().getSeller_username()));
         sourceCountry.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getVacation().getSourceCountry()));
         destinationCountry.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getVacation().getDestinationCountry()));
@@ -884,7 +880,7 @@ public class ViewController implements Initializable, Observer {
                                         VacationSell vacationSell = getTableView().getItems().get(getIndex());
                                         Stage stage = new Stage();
 //                                      stage.getIcons().add(new Image(this.getClass().getResourceAsStream("icon.png")));
-                                        stage.setAlwaysOnTop(true);
+                                        stage.setAlwaysOnTop(false);
                                         stage.setResizable(false);
                                         stage.setTitle("vacation " + vacationSell.getId() + " flights");
                                         stage.initModality(Modality.APPLICATION_MODAL);
@@ -931,10 +927,14 @@ public class ViewController implements Initializable, Observer {
                                     btn.setOnAction(event -> {
                                         if (loggedIn) {
                                             VacationSell vacationSell = getTableView().getItems().get(getIndex());
-                                            if (model.sendRequest(new Request(username, vacationSell.getId())))
-                                                Massage.infoMassage("sent request");
-                                            else
-                                                Massage.errorMassage("set failed");
+                                            if (vacationSell.getVacation().getSeller_username().equals(username))
+                                                Massage.errorMassage("You can not request vacation from yourself");
+                                            else {
+                                                if (model.sendRequest(new Request(username, vacationSell.getId())))
+                                                    Massage.infoMassage("sent request");
+                                                else
+                                                    Massage.errorMassage("set failed");
+                                            }
                                         } else
                                             Massage.errorMassage("You should login to request and buy vacation");
                                     });
@@ -949,9 +949,9 @@ public class ViewController implements Initializable, Observer {
 
         requset_buttons.setCellFactory(cellFactory2);
 
-        vacations.getColumns().addAll(seller_username, sourceCountry, destinationCountry, ticketsType, flight_Type, max_Price_Per_Ticket, tickets_Quantity, canBuyLess, baggage_Included, baggageLimit, hospitality_Included, hospitality_Rank, vacation_type, seeMore_buttons, requset_buttons);
+        vacations.getColumns().addAll(seller_username, sourceCountry, destinationCountry, ticketsType, fromDate, toDate, flight_Type, max_Price_Per_Ticket, tickets_Quantity, canBuyLess, baggage_Included, baggageLimit, hospitality_Included, hospitality_Rank, vacation_type, seeMore_buttons, requset_buttons);
 
-        List<VacationSell> vacationSells = model.getVacations(
+        List<VacationSell> vacationSells = model.getVacations(username,
                 textField_flightCompany.getText().equals("") ? null : textField_flightCompany.getText(),
                 datePicker_fromDate.getValue(),
                 datePicker_toDate.getValue(),
