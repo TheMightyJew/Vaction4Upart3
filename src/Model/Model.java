@@ -565,7 +565,7 @@ public class Model implements IModel {
             String[] tableIni = table.get(i);
             Vacation vacation = new Vacation(tableIni[1], LocalDate.parse(tableIni[7]), LocalDate.parse(tableIni[8]), Integer.parseInt(tableIni[2]), Integer.parseInt(tableIni[3]), tableIni[4].equals("true"), tableIni[5], tableIni[6], (Integer.parseInt(tableIni[9]) > 0), Integer.parseInt(tableIni[9])
                     , Vacation.Tickets_Type.valueOf(tableIni[10]), flights_to_vacation, Vacation.Flight_Type.valueOf(tableIni[11]), Vacation.Vacation_Type.valueOf(tableIni[12]), tableIni[13].equals("true"), Integer.parseInt(tableIni[14]));
-            VacationSell vacationSell = new VacationSell(vacID, vacation, VacationSell.Vacation_Status.valueOf(tableIni[13]));
+            VacationSell vacationSell = new VacationSell(vacID, vacation, VacationSell.Vacation_Status.valueOf(tableIni[15]));
             optinalVacation.add(vacationSell);
         }
 

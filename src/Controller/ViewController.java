@@ -640,7 +640,7 @@ public class ViewController implements Initializable, Observer {
             Massage.errorMassage("Number of tickets must be a positive integer");
             return true;
         }
-        if (flightTypePublish==null || flights.size() == 0) {
+        if (flights==null || flights.size() == 0) {
             Massage.errorMassage("Number of listed flights must be at least 1");
             return true;
         }
