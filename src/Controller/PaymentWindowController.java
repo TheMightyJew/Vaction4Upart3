@@ -38,10 +38,10 @@ public class PaymentWindowController extends Observable {
         }
         else{
             if(model.payForVacation(requestID,new VisaPayment((int)(Integer.parseInt(cardNumberPayment.getText())),(int)(Integer.parseInt(cvvPayment.getText())),datePayment.getValue(),idPayment.getText(),firstNamePayment.getText(),lastNamePayment.getText()))){
-                Massage.infoMassage("Payment was made successfully");
+                closeStage(event);
                 setChanged();
                 notifyObservers();
-                closeStage(event);
+                Massage.infoMassage("Payment was made successfully");
             }
             else{
                 Massage.errorMassage("Payment failed");
@@ -68,10 +68,10 @@ public class PaymentWindowController extends Observable {
             Massage.errorMassage("Please fill all the fields");
         }
         if(model.payForVacation(requestID,new PayaplPayment(emailPayment.getText(),passwordPayment.getText()))){
-            Massage.infoMassage("Payment was made successfully");
+            closeStage(event);
             setChanged();
             notifyObservers();
-            closeStage(event);
+            Massage.infoMassage("Payment was made successfully");
         }
         else{
             Massage.errorMassage("Payment failed");
