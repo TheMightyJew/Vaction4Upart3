@@ -67,8 +67,12 @@ public class PaymentWindowController extends Observable {
         if(emailPayment.getText().isEmpty() || passwordPayment.getText().isEmpty()){
             Massage.errorMassage("Please fill all the fields");
         }
-        if(model.payForVacation(requestID,new PayaplPayment(emailPayment.getText(),passwordPayment.getText())))
+        if(model.payForVacation(requestID,new PayaplPayment(emailPayment.getText(),passwordPayment.getText()))){
             Massage.infoMassage("Payment was made successfully");
+            setChanged();
+            notifyObservers();
+            closeStage(event);
+        }
         else{
             Massage.errorMassage("Payment failed");
         }
