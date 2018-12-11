@@ -665,7 +665,6 @@ public class ViewController implements Initializable, Observer {
             viewController.setFlights(flights);
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
-            stage.initStyle(StageStyle.UNDECORATED);
             stage.setTitle("Flight list");
             stage.setScene(new Scene(root1));
             stage.initModality(Modality.APPLICATION_MODAL); //Lock the window until it closes
@@ -883,7 +882,7 @@ public class ViewController implements Initializable, Observer {
                                     btn.setOnAction(event -> {
                                         VacationSell vacationSell = getTableView().getItems().get(getIndex());
                                         Stage stage = new Stage();
-//                    stage.getIcons().add(new Image(this.getClass().getResourceAsStream("icon.png")));
+//                                      stage.getIcons().add(new Image(this.getClass().getResourceAsStream("icon.png")));
                                         stage.setAlwaysOnTop(true);
                                         stage.setResizable(false);
                                         stage.setTitle("vacation " + vacationSell.getId() + " flights");
@@ -891,9 +890,12 @@ public class ViewController implements Initializable, Observer {
                                         ScrollPane scrollPane = new ScrollPane();
                                         TableView<Flight> flightsTableView = getFlightsTableView();
                                         flightsTableView.getItems().addAll(vacationSell.getVacation().getFlights());
+                                        flightsTableView.setPrefWidth(2500);
                                         scrollPane.setContent(flightsTableView);
                                         flightsTableView.setPrefHeight(600);
-                                        Scene scene = new Scene(scrollPane, flightsTableView.getMinWidth(), flightsTableView.getPrefHeight());
+                                        scrollPane.setPrefHeight(600);
+                                        scrollPane.setPrefWidth(800);
+                                        Scene scene = new Scene(scrollPane);
                                         stage.setScene(scene);
                                         stage.show();
                                     });
@@ -961,6 +963,8 @@ public class ViewController implements Initializable, Observer {
 
         //add comboBox_flightType.getSelectionModel().getSelectedItem() == null ? null : Vacation.Flight_Type.valueOf(comboBox_flightType.getSelectionModel().getSelectedItem().toString()),
         vacations.getItems().addAll(vacationSells);
+        vacations.setPrefWidth(2500);
+        vacations.setPrefHeight(600);
         Stage stage = new Stage();
         stage.setAlwaysOnTop(true);
         stage.setResizable(false);
@@ -968,8 +972,9 @@ public class ViewController implements Initializable, Observer {
         stage.initModality(Modality.APPLICATION_MODAL);
         ScrollPane scrollPane = new ScrollPane();
         scrollPane.setContent(vacations);
-        vacations.setPrefHeight(600);
-        Scene scene = new Scene(scrollPane, vacations.getMinWidth(), vacations.getPrefHeight());
+        scrollPane.setPrefWidth(800);
+        scrollPane.setPrefHeight(600);
+        Scene scene = new Scene(scrollPane);
         stage.setScene(scene);
         stage.show();
     }

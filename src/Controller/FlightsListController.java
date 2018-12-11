@@ -40,7 +40,6 @@ public class FlightsListController extends Observable implements Observer, Initi
             viewController.addObserver(this);
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
-            stage.initStyle(StageStyle.UNDECORATED);
             stage.setTitle("Add flight");
             stage.setScene(new Scene(root1));
             stage.initModality(Modality.APPLICATION_MODAL); //Lock the window until it closes

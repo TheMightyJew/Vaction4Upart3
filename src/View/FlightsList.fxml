@@ -7,17 +7,14 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="400.0" prefWidth="1400.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="Controller.FlightsListController">
+<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.FlightsListController">
    <children>
-      <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="400.0" prefWidth="1400.0">
+      <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="400.0" prefWidth="800.0">
          <children>
-            <ScrollPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="399.0" prefWidth="600.0">
-              <content>
-                <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefHeight="348.0" prefWidth="1397.0">
-                     <children>
-                        <TableView fx:id="flightsTable" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="350.0" prefWidth="1400.0" />
-                     </children></AnchorPane>
-              </content>
+            <ScrollPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+               <content>
+                  <TableView fx:id="flightsTable" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="1600.0" />
+               </content>
             </ScrollPane>
             <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="100.0" prefWidth="200.0">
                <children>
