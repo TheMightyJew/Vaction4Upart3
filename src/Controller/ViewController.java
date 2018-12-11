@@ -253,7 +253,7 @@ public class ViewController implements Initializable, Observer {
         tableView_myRequests.getItems().clear();
         tableView_myRequests.getItems().addAll(model.getMyRequests(username));
         tableView_receivedRequests.getItems().clear();
-        tableView_myRequests.getItems().addAll(model.getReceivedRequests(username));
+        tableView_receivedRequests.getItems().addAll(model.getReceivedRequests(username));
     }
 
     private void tabSearchInit() {
