@@ -63,7 +63,7 @@ public class AddFlightController extends Observable implements Initializable {
     private static boolean hourContextProblem(String hour) {
         try{
             String [] time=hour.split(":");
-            if(time.length!=2)
+            if(time.length!=2 || time[0].length()!=2 || time[1].length()!=2)
                 return true;
             if(Integer.parseInt(time[0])>23 || Integer.parseInt(time[0])<0)
                 return true;

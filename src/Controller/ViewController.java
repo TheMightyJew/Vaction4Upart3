@@ -190,7 +190,7 @@ public class ViewController implements Initializable, Observer {
 //                                        AView view = fxmlLoader.getController();
 //                                        view.setViewModel(viewModel);
 //                                        viewModel.addObserver(view);
-//        stage.initModality(Modality.APPLICATION_MODAL);
+//                                        stage.initModality(Modality.APPLICATION_MODAL);
                                         stage.setOnCloseRequest(event1 -> refreshRequests());
                                         stage.show();
 
