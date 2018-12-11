@@ -148,7 +148,7 @@
                               </VBox>
                            </content>
                         </Tab>
-                        <Tab fx:id="readTab" text="Read">
+                        <Tab fx:id="readTab" text="serachUser">
                            <content>
                               <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
                                  <children>

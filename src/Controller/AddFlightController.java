@@ -49,7 +49,7 @@ public class AddFlightController extends Observable implements Initializable {
             Massage.errorMassage("Hour pattern must be <Hours:Minutes> pattern (0<=Hours<=23 , 0<=Minutes<=59)");
             return true;
         }
-        else if(departDate.getValue().isAfter(landingDate.getValue()) || (departDate.getValue().compareTo(landingDate.getValue())==0 && compareHours(landingHour.getText(),departHour.getText())==1)){
+        else if(departDate.getValue().isAfter(landingDate.getValue()) || (departDate.getValue().isEqual(landingDate.getValue()) && compareHours(departHour.getText(),landingHour.getText())!=1)){
             Massage.errorMassage("Depart time must be before landing time");
             return true;
         }
@@ -63,7 +63,7 @@ public class AddFlightController extends Observable implements Initializable {
     private static boolean hourContextProblem(String hour) {
         try{
             String [] time=hour.split(":");
-            if(time.length!=2)
+            if(time.length!=2 || time[0].length()!=2 || time[1].length()!=2)
                 return true;
             if(Integer.parseInt(time[0])>23 || Integer.parseInt(time[0])<0)
                 return true;

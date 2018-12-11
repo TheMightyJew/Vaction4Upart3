@@ -282,7 +282,7 @@ public class Model implements IModel {
         try {
             c = DriverManager.getConnection("jdbc:sqlite:" + Configuration.loadProperty("directoryPath") + databaseName);
             stmt = c.createStatement();
-            String sql = "CREATE TABLE IF NOT EXISTS Paypalayments_Table (\n"
+            String sql = "CREATE TABLE IF NOT EXISTS Paypalpayments_Table (\n"
                     + "PaymentID INTEGER PRIMARY KEY AUTOINCREMENT,\n"
                     + "email text NOT NULL,\n"
                     + "password text\n"
@@ -572,14 +572,16 @@ public class Model implements IModel {
         for (int i = 0; i < optinalVacation.size(); i++) {
             VacationSell vacationSell = optinalVacation.get(i);
             Vacation vacation = vacationSell.getVacation();
-            boolean existsFlightCompany = false;
+            boolean existsFlightCompany = (flightCompany == null);
             for (Flight flight : vacation.getFlights()) {
                 if (flight.getFlightCompany().equalsIgnoreCase(flightCompany))
                     existsFlightCompany = true;
             }
             if (!existsFlightCompany)
                 continue;
-            if (!(vacation.getFromDate().compareTo(fromDate) >= 0 && vacation.getToDate().compareTo(toDate) <= 0))
+            if (!(fromDate == null || vacation.getFromDate().compareTo(fromDate) >= 0))
+                continue;
+            if (!(toDate == null || vacation.getToDate().compareTo(toDate) <= 0))
                 continue;
             if (baggage) {
                 if (!(vacation.isBaggage_Included() && vacation.getBaggageLimit() >= baggageMin))
@@ -589,17 +591,19 @@ public class Model implements IModel {
                 if (vacation.isBaggage_Included())
                     continue;
             }
-            if (!(vacation.getTickets_Quantity() == ticketsNum || (vacation.isCanBuyLess() && vacation.getTickets_Quantity() >= ticketsNum)))
+            if (!(vacation.getTickets_Quantity() == ticketsNum || (vacation.isCanBuyLess() && vacation.getTickets_Quantity() >= ticketsNum) || tickets_type == null))
                 continue;
-            if (!vacation.getTicketsType().name().equals(tickets_type.name()))
+            if (!(tickets_type == null||vacation.getTicketsType().name().equals(tickets_type.name()) ))
                 continue;
-            if (!vacation.getFlight_Type().name().equals(flight_type.name()))
+            if (!(flight_type == null||vacation.getFlight_Type().name().equals(flight_type.name())))
                 continue;
-            if (!(vacation.getPrice_Per_Ticket() <= maxPricePerTicket))
+            if (!(maxPricePerTicket == null||vacation.getPrice_Per_Ticket() <= maxPricePerTicket))
                 continue;
-            if (!(vacation.getSourceCountry().equalsIgnoreCase(sourceCountry) && vacation.getDestinationCountry().equalsIgnoreCase(destCountry)))
+            if (!(sourceCountry == null || sourceCountry.equalsIgnoreCase(vacation.getSourceCountry())))
                 continue;
-            if (!vacation.getVacation_type().name().equals(vacation_type.name()))
+            if (!(destCountry == null || destCountry.equalsIgnoreCase(vacation.getDestinationCountry())))
+                continue;
+            if (!(vacation_type == null||vacation.getVacation_type().name().equals(vacation_type.name()) ))
                 continue;
             if (hospitalityIncluded) {
                 if (!(vacation.isHospitality_Included() && vacation.getHospitality_Rank() >= minHospitalityRank))
@@ -646,7 +650,7 @@ public class Model implements IModel {
                 }
             }
             Vacation vac = new Vacation(vacation[1], LocalDate.parse(vacation[4]), LocalDate.parse(vacation[5]), Integer.parseInt(vacation[6]), Integer.parseInt(vacation[7]), vacation[8].equals("true"), vacation[2], vacation[3], (Integer.parseInt(vacation[12]) > 0), Integer.parseInt(vacation[12]), Vacation.Tickets_Type.valueOf(vacation[9]), flightForCreateVacation, Vacation.Flight_Type.valueOf(vacation[11]), Vacation.Vacation_Type.valueOf(vacation[10]), vacation[13].equals("true"), Integer.parseInt(vacation[14]));
-            VacationSell vacSell = new VacationSell(Integer.parseInt(vacation[0]), vac, VacationSell.Vacation_Status.valueOf(vacation[15 ]));
+            VacationSell vacSell = new VacationSell(Integer.parseInt(vacation[0]), vac, VacationSell.Vacation_Status.valueOf(vacation[15]));
             PurchaseRequest purchaseRequest = new PurchaseRequest(Integer.parseInt(row[0]), row[1], vacSell, PurchaseRequest.Request_Status.valueOf(row[3]));
             ans.add(purchaseRequest);
         }
@@ -741,11 +745,12 @@ public class Model implements IModel {
         } catch (SQLException e) {
             return false;
         }
-        String PaymentID = selectQuery(tableNameEnum.Payments_Table.toString(), PaymentfieldsNameEnum.Username.toString() + "='" + usernamePaying + "' AND " + PaymentfieldsNameEnum.VacationID + "='" + vacationId + "' AND" + PaymentfieldsNameEnum.Payment_Method + "='" + paymentMethod + "'").get(0)[0];
+        String PaymentID = selectQuery(tableNameEnum.Payments_Table.toString(), PaymentfieldsNameEnum.Username.toString() + "='" + usernamePaying + "' AND " + PaymentfieldsNameEnum.VacationID + "='" + vacationId + "' AND " + PaymentfieldsNameEnum.Payment_Method + "='" + paymentMethod + "'").get(0)[0];
         List<String[]> toReject = selectQuery(tableNameEnum.PurchaseRequests_Table.toString(), PurchaseRequestsfieldNameEnum.Vacation_id + "='" + vacationId + "'");
         for (String[] tr : toReject) {
             int requestNum = Integer.parseInt(tr[0]);
-            rejectRequest(requestNum);
+            if (requestNum != requestId)
+                rejectRequest(requestNum);
         }
         PayaplPayment ppp;
         VisaPayment vp;
@@ -756,6 +761,7 @@ public class Model implements IModel {
             try {
                 insertQuery(tableNameEnum.Paypalpayment_Table.toString(), PaypalPaymentfieldsEnum.class, newvalues);
             } catch (SQLException e) {
+                e.printStackTrace();
                 return false;
             }
             successPay = true;
@@ -766,6 +772,7 @@ public class Model implements IModel {
             try {
                 insertQuery(tableNameEnum.VisaPayment_Table.toString(), VisePaymentfieldsEnum.class, newvalues);
             } catch (SQLException e) {
+                e.printStackTrace();
                 return false;
             }
             successPay = true;

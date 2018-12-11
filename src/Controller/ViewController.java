@@ -185,12 +185,12 @@ public class ViewController implements Initializable, Observer {
                                             e.printStackTrace();
 //                                            showAlert("Exception!");
                                         }
-                                        Scene scene = new Scene(root, 600, 650);
+                                        Scene scene = new Scene(root);
                                         stage.setScene(scene);
 //                                        AView view = fxmlLoader.getController();
 //                                        view.setViewModel(viewModel);
 //                                        viewModel.addObserver(view);
-//        stage.initModality(Modality.APPLICATION_MODAL);
+//                                        stage.initModality(Modality.APPLICATION_MODAL);
                                         stage.setOnCloseRequest(event1 -> refreshRequests());
                                         stage.show();
 
@@ -727,6 +727,9 @@ public class ViewController implements Initializable, Observer {
         if (o instanceof FlightsListController) {
             flights = ((ArrayList<Flight>) arg);
             flightListBut.setText("Flights list (" + flights.size() + ")");
+        }
+        if(o instanceof PaymentWindowController){
+            refreshRequests();
         }
     }
 
