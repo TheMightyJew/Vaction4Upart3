@@ -282,7 +282,7 @@ public class Model implements IModel {
         try {
             c = DriverManager.getConnection("jdbc:sqlite:" + Configuration.loadProperty("directoryPath") + databaseName);
             stmt = c.createStatement();
-            String sql = "CREATE TABLE IF NOT EXISTS Paypalayments_Table (\n"
+            String sql = "CREATE TABLE IF NOT EXISTS Paypalpayments_Table (\n"
                     + "PaymentID INTEGER PRIMARY KEY AUTOINCREMENT,\n"
                     + "email text NOT NULL,\n"
                     + "password text\n"
@@ -572,14 +572,16 @@ public class Model implements IModel {
         for (int i = 0; i < optinalVacation.size(); i++) {
             VacationSell vacationSell = optinalVacation.get(i);
             Vacation vacation = vacationSell.getVacation();
-            boolean existsFlightCompany = false;
+            boolean existsFlightCompany = (flightCompany == null);
             for (Flight flight : vacation.getFlights()) {
                 if (flight.getFlightCompany().equalsIgnoreCase(flightCompany))
                     existsFlightCompany = true;
             }
             if (!existsFlightCompany)
                 continue;
-            if (!(vacation.getFromDate().compareTo(fromDate) >= 0 && vacation.getToDate().compareTo(toDate) <= 0))
+            if (!(fromDate == null || vacation.getFromDate().compareTo(fromDate) >= 0))
+                continue;
+            if (!(toDate == null || vacation.getToDate().compareTo(toDate) <= 0))
                 continue;
             if (baggage) {
                 if (!(vacation.isBaggage_Included() && vacation.getBaggageLimit() >= baggageMin))
@@ -589,17 +591,19 @@ public class Model implements IModel {
                 if (vacation.isBaggage_Included())
                     continue;
             }
-            if (!(vacation.getTickets_Quantity() == ticketsNum || (vacation.isCanBuyLess() && vacation.getTickets_Quantity() >= ticketsNum)))
+            if (!(vacation.getTickets_Quantity() == ticketsNum || (vacation.isCanBuyLess() && vacation.getTickets_Quantity() >= ticketsNum) || tickets_type == null))
                 continue;
-            if (!vacation.getTicketsType().name().equals(tickets_type.name()))
+            if (!(tickets_type == null||vacation.getTicketsType().name().equals(tickets_type.name()) ))
                 continue;
-            if (!vacation.getFlight_Type().name().equals(flight_type.name()))
+            if (!(flight_type == null||vacation.getFlight_Type().name().equals(flight_type.name())))
                 continue;
-            if (!(vacation.getPrice_Per_Ticket() <= maxPricePerTicket))
+            if (!(maxPricePerTicket == null||vacation.getPrice_Per_Ticket() <= maxPricePerTicket))
                 continue;
-            if (!(vacation.getSourceCountry().equalsIgnoreCase(sourceCountry) && vacation.getDestinationCountry().equalsIgnoreCase(destCountry)))
+            if (!(sourceCountry == null || sourceCountry.equalsIgnoreCase(vacation.getSourceCountry())))
                 continue;
-            if (!vacation.getVacation_type().name().equals(vacation_type.name()))
+            if (!(destCountry == null || destCountry.equalsIgnoreCase(vacation.getDestinationCountry())))
+                continue;
+            if (!(vacation_type == null||vacation.getVacation_type().name().equals(vacation_type.name()) ))
                 continue;
             if (hospitalityIncluded) {
                 if (!(vacation.isHospitality_Included() && vacation.getHospitality_Rank() >= minHospitalityRank))
@@ -757,6 +761,7 @@ public class Model implements IModel {
             try {
                 insertQuery(tableNameEnum.Paypalpayment_Table.toString(), PaypalPaymentfieldsEnum.class, newvalues);
             } catch (SQLException e) {
+                e.printStackTrace();
                 return false;
             }
             successPay = true;
@@ -767,6 +772,7 @@ public class Model implements IModel {
             try {
                 insertQuery(tableNameEnum.VisaPayment_Table.toString(), VisePaymentfieldsEnum.class, newvalues);
             } catch (SQLException e) {
+                e.printStackTrace();
                 return false;
             }
             successPay = true;
