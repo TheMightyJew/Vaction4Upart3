@@ -826,8 +826,8 @@ public class ViewController implements Initializable, Observer {
         TableColumn<VacationSell, String> canBuyLess = new TableColumn<>("Can buy less");
         TableColumn<VacationSell, String> baggage_Included = new TableColumn<>("baggage included");
         TableColumn<VacationSell, Number> baggageLimit = new TableColumn<>("Baggage limit");
-        TableColumn<VacationSell, String> hospitality_Included = new TableColumn<>("");
-        TableColumn<VacationSell, Number> hospitality_Rank = new TableColumn<>("Hospitality included");
+        TableColumn<VacationSell, String> hospitality_Included = new TableColumn<>("Hospitality included");
+        TableColumn<VacationSell, Number> hospitality_Rank = new TableColumn<>("Hospitality Rank");
         TableColumn<VacationSell, String> vacation_type = new TableColumn<>("Vacation type");
 
 //        seller_username.setCellValueFactory(new PropertyValueFactory<>("seller_username"));
