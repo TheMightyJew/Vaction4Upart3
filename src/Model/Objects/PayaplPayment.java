@@ -4,6 +4,10 @@ public class PayaplPayment extends Payment {
     private String username;
     private String password;
 
+    public PayaplPayment(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
 
     @Override
     public boolean isPaypal() {

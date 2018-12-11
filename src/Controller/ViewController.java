@@ -18,7 +18,6 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
-
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
@@ -146,6 +145,7 @@ public class ViewController implements Initializable, Observer {
         flightTypePublish.getItems().addAll(Vacation.Flight_Type.values());
         ticketsClassPublish.getItems().addAll(Vacation.Tickets_Type.values());
         setTabsClosable(false);
+        //searchTab
         tabSearchInit();
         tabRequestsInit();
     }
@@ -656,7 +656,7 @@ public class ViewController implements Initializable, Observer {
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.initStyle(StageStyle.UNDECORATED);
             stage.setTitle("Flight list");
-            stage.setScene(new Scene(root1, 1400, 400));
+            stage.setScene(new Scene(root1));
             stage.initModality(Modality.APPLICATION_MODAL); //Lock the window until it closes
             stage.show();
         } catch (Exception e) {
